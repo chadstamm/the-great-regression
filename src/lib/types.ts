@@ -1,10 +1,10 @@
-export type AppMode = 'portugal' | 'merica' | 'uk';
+export type AppMode = 'portugal' | 'merica';
 
 export type UserName = 'Chad' | 'Steve';
 
 export type Category = 'sites' | 'restaurants' | 'events' | 'experiences';
 
-export type FilterStatus = 'all' | 'agreed' | 'done';
+export type FilterStatus = 'all' | 'done';
 
 export interface BucketItem {
   id: string;
@@ -12,6 +12,7 @@ export interface BucketItem {
   title: string;
   note: string | null;
   added_by: UserName;
+  initials: string;
   votes: string[];
   is_done: boolean;
   created_at: string;

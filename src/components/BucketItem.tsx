@@ -2,27 +2,22 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Heart, Star } from 'lucide-react';
+import { Check, X, Star } from 'lucide-react';
 import { useMode } from '@/contexts/ModeContext';
-import { useUser } from '@/contexts/UserContext';
 import { BucketItem as BucketItemType } from '@/lib/types';
 
 export default function BucketItem({
   item,
-  onToggleVote,
   onToggleDone,
   onRemove,
 }: {
   item: BucketItemType;
-  onToggleVote: () => void;
   onToggleDone: () => void;
   onRemove: () => void;
 }) {
   const { mode } = useMode();
-  const { user } = useUser();
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const hasVoted = user ? item.votes.includes(user) : false;
   const isAgreed = item.votes.length >= 2;
   const isDone = item.is_done;
 
@@ -57,7 +52,7 @@ export default function BucketItem({
         {/* Done toggle */}
         <button
           onClick={onToggleDone}
-          className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors"
+          className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors"
           style={{
             borderColor:
               mode === 'portugal'
@@ -114,7 +109,7 @@ export default function BucketItem({
                 >
                   <Star size={10} />
                   {mode === 'portugal'
-                    ? 'Combinado!'
+                    ? 'Agreed!'
                     : 'Bipartisan Agreement Reached'}
                 </motion.span>
               )}
@@ -136,7 +131,7 @@ export default function BucketItem({
                     }`,
                   }}
                 >
-                  {mode === 'portugal' ? 'Feito!' : 'MISSION ACCOMPLISHED'}
+                  {mode === 'portugal' ? 'Done!' : 'MISSION ACCOMPLISHED'}
                 </motion.span>
               )}
             </AnimatePresence>
@@ -152,69 +147,30 @@ export default function BucketItem({
               {item.note}
             </p>
           )}
-
-          <div className="mt-1.5 flex items-center gap-3">
-            <span
-              className="text-[11px]"
-              style={{
-                color: mode === 'portugal' ? '#A89070' : '#555',
-              }}
-            >
-              {item.added_by}
-            </span>
-
-            {/* Vote count */}
-            {item.votes.length > 0 && (
-              <span
-                className="text-[11px]"
-                style={{
-                  color: mode === 'portugal' ? '#C4953A' : '#FBBF24',
-                }}
-              >
-                {item.votes.join(', ')} voted
-              </span>
-            )}
-          </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex shrink-0 items-center gap-1.5">
-          {/* Vote button */}
-          <motion.button
-            whileTap={{ scale: 0.85 }}
-            onClick={onToggleVote}
-            className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-            style={{
-              background: hasVoted
-                ? mode === 'portugal'
-                  ? 'rgba(196, 149, 58, 0.15)'
-                  : 'rgba(251, 191, 36, 0.15)'
-                : 'transparent',
-            }}
-            title={hasVoted ? 'Remove vote' : 'Vote'}
-          >
-            <Heart
-              size={16}
-              fill={hasVoted ? (mode === 'portugal' ? '#C4953A' : '#FBBF24') : 'none'}
-              color={
-                hasVoted
-                  ? mode === 'portugal'
-                    ? '#C4953A'
-                    : '#FBBF24'
-                  : mode === 'portugal'
-                    ? 'rgba(27, 75, 138, 0.3)'
-                    : 'rgba(255,255,255,0.2)'
-              }
-            />
-          </motion.button>
+        {/* Initials badge — right side */}
+        <div
+          className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold"
+          style={{
+            background:
+              mode === 'portugal'
+                ? 'rgba(27, 75, 138, 0.1)'
+                : 'rgba(255, 255, 255, 0.08)',
+            color: mode === 'portugal' ? '#1B4B8A' : '#888',
+          }}
+        >
+          {item.initials || '??'}
+        </div>
 
-          {/* Remove button */}
+        {/* Remove button */}
+        <div className="flex shrink-0 items-center">
           <AnimatePresence>
             {!showConfirm ? (
               <button
                 onClick={() => setShowConfirm(true)}
                 className="flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition-opacity group-hover:opacity-100"
-                title={mode === 'portugal' ? 'Remover' : 'Deport from the list'}
+                title={mode === 'portugal' ? 'Remove' : 'Deport from the list'}
               >
                 <X
                   size={14}
@@ -234,7 +190,7 @@ export default function BucketItem({
                   background: mode === 'portugal' ? '#B91C1C' : '#DC2626',
                 }}
               >
-                {mode === 'portugal' ? 'Remover?' : 'Deport?'}
+                {mode === 'portugal' ? 'Remove?' : 'Deport?'}
               </motion.button>
             )}
           </AnimatePresence>

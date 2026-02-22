@@ -5,9 +5,8 @@ import { useMode } from '@/contexts/ModeContext';
 import { FilterStatus } from '@/lib/types';
 
 const FILTERS: { key: FilterStatus; label: Record<string, string> }[] = [
-  { key: 'all', label: { portugal: 'Todos', merica: 'All', uk: 'All' } },
-  { key: 'agreed', label: { portugal: 'Combinado', merica: 'Agreed', uk: 'Agreed' } },
-  { key: 'done', label: { portugal: 'Feito', merica: 'Done', uk: 'Done' } },
+  { key: 'all', label: { portugal: 'Active', merica: 'Active' } },
+  { key: 'done', label: { portugal: 'Archived', merica: 'Archived' } },
 ];
 
 export default function StatusFilter({

@@ -16,7 +16,7 @@ export function ModeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem('app-mode') as AppMode | null;
-    if (saved === 'portugal' || saved === 'merica' || saved === 'uk') {
+    if (saved === 'portugal' || saved === 'merica') {
       setModeState(saved);
     }
     setMounted(true);

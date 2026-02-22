@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X } from 'lucide-react';
 import { useMode } from '@/contexts/ModeContext';
-import { useUser } from '@/contexts/UserContext';
 import { Category } from '@/lib/types';
 
 export default function AddItemForm({
@@ -18,11 +17,10 @@ export default function AddItemForm({
   const [title, setTitle] = useState('');
   const [note, setNote] = useState('');
   const { mode } = useMode();
-  const { user } = useUser();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !user) return;
+    if (!title.trim()) return;
     onAdd(title.trim(), note.trim() || null);
     setTitle('');
     setNote('');
@@ -51,7 +49,7 @@ export default function AddItemForm({
             }}
           >
             <Plus size={16} />
-            {mode === 'portugal' ? 'Adicionar' : 'Add to the list'}
+            {mode === 'portugal' ? 'Add item' : 'Add to the list'}
           </motion.button>
         ) : (
           <motion.form
@@ -79,7 +77,7 @@ export default function AddItemForm({
                   color: mode === 'portugal' ? '#1B4B8A' : '#DC2626',
                 }}
               >
-                {mode === 'portugal' ? 'Novo item' : 'New item'}
+                New item
               </span>
               <button
                 type="button"
@@ -97,7 +95,7 @@ export default function AddItemForm({
             <input
               type="text"
               placeholder={
-                mode === 'portugal' ? 'O que queres fazer?' : 'What do you want to do?'
+                mode === 'portugal' ? 'What do you want to do?' : 'What do you want to do?'
               }
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -117,7 +115,7 @@ export default function AddItemForm({
             <input
               type="text"
               placeholder={
-                mode === 'portugal' ? 'Nota (opcional)' : 'Note (optional)'
+                'Note (optional)'
               }
               value={note}
               onChange={(e) => setNote(e.target.value)}
@@ -141,7 +139,7 @@ export default function AddItemForm({
                 background: mode === 'portugal' ? '#1B4B8A' : '#DC2626',
               }}
             >
-              {mode === 'portugal' ? 'Adicionar' : 'Add it'}
+              {mode === 'portugal' ? 'Add' : 'Add it'}
             </button>
           </motion.form>
         )}

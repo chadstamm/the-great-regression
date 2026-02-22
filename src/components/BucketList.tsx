@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useMode } from '@/contexts/ModeContext';
-import { useUser } from '@/contexts/UserContext';
 import { useBucketItems } from '@/hooks/useBucketItems';
 import { CATEGORIES } from '@/lib/constants';
 import { FilterStatus } from '@/lib/types';
@@ -11,8 +10,7 @@ import CategorySection from './CategorySection';
 
 export default function BucketList() {
   const { mode } = useMode();
-  const { user } = useUser();
-  const { items, loading, addItem, toggleVote, toggleDone, removeItem } =
+  const { items, loading, addItem, toggleDone, removeItem } =
     useBucketItems();
   const [filter, setFilter] = useState<FilterStatus>('all');
 
@@ -47,10 +45,7 @@ export default function BucketList() {
             items={categoryItems}
             filter={filter}
             onAdd={(title, note) => {
-              if (user) addItem(category, title, note, user);
-            }}
-            onToggleVote={(item) => {
-              if (user) toggleVote(item, user);
+              addItem(category, title, note, 'Chad');
             }}
             onToggleDone={(item) => toggleDone(item)}
             onRemove={(id) => removeItem(id)}

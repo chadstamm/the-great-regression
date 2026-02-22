@@ -16,6 +16,7 @@ function buildLocalItems(): BucketItem[] {
     title: item.title,
     note: item.note,
     added_by: item.added_by,
+    initials: item.initials,
     votes: [],
     is_done: false,
     created_at: new Date().toISOString(),
@@ -58,6 +59,7 @@ export function useBucketItems() {
       title: item.title,
       note: item.note,
       added_by: item.added_by,
+      initials: item.initials,
       votes: [],
       is_done: false,
     }));
@@ -115,7 +117,8 @@ export function useBucketItems() {
     category: Category,
     title: string,
     note: string | null,
-    addedBy: UserName
+    addedBy: UserName,
+    initials: string = 'CS'
   ) => {
     if (isLocal) {
       setItems((prev) => [
@@ -126,6 +129,7 @@ export function useBucketItems() {
           title,
           note,
           added_by: addedBy,
+          initials,
           votes: [],
           is_done: false,
           created_at: new Date().toISOString(),
@@ -138,6 +142,7 @@ export function useBucketItems() {
       title,
       note,
       added_by: addedBy,
+      initials,
       votes: [],
       is_done: false,
     });

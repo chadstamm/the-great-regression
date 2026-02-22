@@ -8,24 +8,20 @@ export const DEPARTURE_DATE = new Date('2026-08-15T00:00:00+01:00');
 
 export const CATEGORY_LABELS: Record<Category, Record<string, string>> = {
   sites: {
-    portugal: 'Locais',
+    portugal: 'Sites',
     merica: 'Sites',
-    uk: 'Sites',
   },
   restaurants: {
-    portugal: 'Restaurantes & Bares',
+    portugal: 'Restaurants & Bars',
     merica: 'Restaurants',
-    uk: 'Restaurants',
   },
   events: {
-    portugal: 'Eventos',
+    portugal: 'Events',
     merica: 'Events',
-    uk: 'Events',
   },
   experiences: {
-    portugal: 'Experiências',
+    portugal: 'Experiences',
     merica: 'Experiences',
-    uk: 'Experiences',
   },
 };
 
@@ -62,25 +58,24 @@ export const SEED_ITEMS: Array<{
   title: string;
   note: string | null;
   added_by: UserName;
+  initials: string;
 }> = [
-  { category: 'sites', title: 'Pessoa Museum', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Gulbenkian', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Roman stuff', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Combatente Museum', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'MAAT', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Coach Museum', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Belém Cultural Center', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Sporting vs Benfica', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Bugio Lighthouse', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'St. António Church and Museum', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Carcavelos tastings', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Pixar exhibit', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Marquês de Pombal Palace', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Monsanto Park', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Monsanto Village', note: null, added_by: 'Chad' },
-  { category: 'sites', title: 'Palácio Marquês de Fronteira', note: null, added_by: 'Chad' },
-  { category: 'restaurants', title: 'Brunch at Santa Joana', note: null, added_by: 'Chad' },
-  { category: 'events', title: 'City Hall first-of-the-month tour', note: null, added_by: 'Chad' },
-  { category: 'experiences', title: 'Metro picture-taking day (station art)', note: null, added_by: 'Chad' },
-  { category: 'experiences', title: 'Ferry to Seixal', note: null, added_by: 'Chad' },
+  { category: 'sites', title: 'Fernando Pessoa Museum', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'sites', title: 'Gulbenkian Museum', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'sites', title: 'Roman artifacts in Alfama', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'sites', title: 'Ajuda Palace', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'sites', title: 'MAAT', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'sites', title: 'Coaches Museum', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'sites', title: 'Bugio Lighthouse', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'sites', title: 'St. António Church and Museum', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'sites', title: 'Carcavelos wine tasting', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'sites', title: 'Marquês de Pombal Palace', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'restaurants', title: 'Brunch at Santa Joana', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'restaurants', title: 'Lunch in Évora', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'restaurants', title: 'Lunch in Setúbal', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'events', title: 'Ana Moura concert', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'experiences', title: 'Metro photography day (station art)', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'experiences', title: 'Ferry to Seixal', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'experiences', title: 'Learn the Portuguese bread styles by name', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'experiences', title: 'Grill fish from the mercado', note: null, added_by: 'Chad', initials: 'CS' },
 ];

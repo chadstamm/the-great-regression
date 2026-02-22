@@ -2,7 +2,6 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMode } from '@/contexts/ModeContext';
-import { useUser } from '@/contexts/UserContext';
 import { BucketItem as BucketItemType, Category, FilterStatus } from '@/lib/types';
 import { CATEGORY_LABELS, MERICA_SUBTITLES } from '@/lib/constants';
 import BucketItem from './BucketItem';
@@ -13,7 +12,6 @@ export default function CategorySection({
   items,
   filter,
   onAdd,
-  onToggleVote,
   onToggleDone,
   onRemove,
 }: {
@@ -21,17 +19,14 @@ export default function CategorySection({
   items: BucketItemType[];
   filter: FilterStatus;
   onAdd: (title: string, note: string | null) => void;
-  onToggleVote: (item: BucketItemType) => void;
   onToggleDone: (item: BucketItemType) => void;
   onRemove: (id: string) => void;
 }) {
   const { mode } = useMode();
-  const { user } = useUser();
 
   const filteredItems = items.filter((item) => {
-    if (filter === 'agreed') return item.votes.length >= 2 && !item.is_done;
     if (filter === 'done') return item.is_done;
-    return true;
+    return !item.is_done;
   });
 
   const label = CATEGORY_LABELS[category][mode];
@@ -67,7 +62,6 @@ export default function CategorySection({
             <BucketItem
               key={item.id}
               item={item}
-              onToggleVote={() => onToggleVote(item)}
               onToggleDone={() => onToggleDone(item)}
               onRemove={() => onRemove(item.id)}
             />
@@ -80,12 +74,12 @@ export default function CategorySection({
             style={{ color: mode === 'portugal' ? '#A89070' : '#555' }}
           >
             {mode === 'portugal'
-              ? 'Nada aqui ainda...'
+              ? 'Nothing here yet...'
               : 'Nothing here yet... sad.'}
           </p>
         )}
 
-        {user && <AddItemForm category={category} onAdd={onAdd} />}
+        <AddItemForm category={category} onAdd={onAdd} />
       </div>
     </motion.section>
   );
