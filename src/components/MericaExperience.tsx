@@ -430,33 +430,33 @@ function SnarkCarousel() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Arrow controls — positioned in lower part of image area */}
-        <button
-          onClick={goPrev}
-          className="absolute left-2 flex h-11 w-11 items-center justify-center rounded-full text-xl font-black transition-transform active:scale-90"
-          style={{
-            top: '40%',
-            background: 'rgba(220, 38, 38, 0.85)',
-            color: '#FBBF24',
-            border: '2px solid #FBBF24',
-            boxShadow: '0 2px 12px rgba(0, 0, 0, 0.4)',
-          }}
-        >
-          ‹
-        </button>
-        <button
-          onClick={goNext}
-          className="absolute right-2 flex h-11 w-11 items-center justify-center rounded-full text-xl font-black transition-transform active:scale-90"
-          style={{
-            top: '40%',
-            background: 'rgba(220, 38, 38, 0.85)',
-            color: '#FBBF24',
-            border: '2px solid #FBBF24',
-            boxShadow: '0 2px 12px rgba(0, 0, 0, 0.4)',
-          }}
-        >
-          ›
-        </button>
+        {/* Arrow controls — anchored to image area via matching aspect ratio */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 aspect-[16/9] flex items-center justify-between px-2">
+          <button
+            onClick={goPrev}
+            className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full text-xl font-black transition-transform active:scale-90"
+            style={{
+              background: 'rgba(220, 38, 38, 0.85)',
+              color: '#FBBF24',
+              border: '2px solid #FBBF24',
+              boxShadow: '0 2px 12px rgba(0, 0, 0, 0.4)',
+            }}
+          >
+            ‹
+          </button>
+          <button
+            onClick={goNext}
+            className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full text-xl font-black transition-transform active:scale-90"
+            style={{
+              background: 'rgba(220, 38, 38, 0.85)',
+              color: '#FBBF24',
+              border: '2px solid #FBBF24',
+              boxShadow: '0 2px 12px rgba(0, 0, 0, 0.4)',
+            }}
+          >
+            ›
+          </button>
+        </div>
       </div>
 
       {/* Controls row: dots + pause */}

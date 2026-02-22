@@ -372,6 +372,40 @@ export default function SantosPopulares() {
           ))}
         </div>
       </motion.div>
+
+      {/* Pimba Music Player */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="rounded-2xl p-5"
+        style={{
+          background: 'rgba(255, 248, 240, 0.6)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(196, 149, 58, 0.2)',
+        }}
+      >
+        <h3
+          className="mb-1 text-sm font-semibold uppercase tracking-wider"
+          style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
+        >
+          🎵 Pimba Soundtrack
+        </h3>
+        <p className="mb-3 text-[11px]" style={{ color: '#8B7355' }}>
+          No arraial is complete without pimba blasting from every direction
+        </p>
+        <div className="overflow-hidden rounded-xl">
+          <iframe
+            src="https://open.spotify.com/embed/playlist/6opM0Y8o0gCP86EdJfCLb3?utm_source=generator"
+            width="100%"
+            height="352"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            className="rounded-xl"
+          />
+        </div>
+      </motion.div>
     </div>
   );
 }
