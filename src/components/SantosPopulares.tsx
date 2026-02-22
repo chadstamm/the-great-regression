@@ -1,49 +1,120 @@
 'use client';
 
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { Check } from 'lucide-react';
 
-interface SaintDay {
-  saint: string;
-  feastDay: string;
-  eveNight: string;
+interface Festival {
+  id: string;
+  name: string;
+  location: string;
+  dates: string;
   description: string;
+  highlight?: boolean;
 }
 
-const SAINT_DAYS: SaintDay[] = [
+const CONFIRMED_FESTIVALS: Festival[] = [
   {
-    saint: 'Santo António',
-    feastDay: '13 de Junho, 2026',
-    eveNight: '12 de Junho, 2026',
-    description:
-      'Lisbon\'s patron saint — the biggest night of the year. Marchas Populares parade on Avenida da Liberdade, grilled sardines everywhere, and arraiais in every neighborhood.',
+    id: 'santo-antonio-eve',
+    name: 'Noite de Santo António',
+    location: 'Avenida da Liberdade & citywide',
+    dates: '12 June 2026 (evening)',
+    description: 'THE big night — Marchas Populares parade, sardines everywhere, arraiais in every bairro. Lisbon\'s biggest party.',
+    highlight: true,
   },
   {
-    saint: 'São João',
-    feastDay: '24 de Junho, 2026',
-    eveNight: '23 de Junho, 2026',
-    description:
-      'Porto\'s main celebration, but Lisbon has smaller festivities too. Plastic hammers, bonfires, and midnight revelry.',
+    id: 'santo-antonio-feast',
+    name: 'Dia de Santo António',
+    location: 'Alfama, Igreja de Santo António',
+    dates: '13 June 2026',
+    description: 'Lisbon\'s patron saint feast day. Mass weddings at the Sé cathedral, public holiday in Lisbon.',
+    highlight: true,
   },
   {
-    saint: 'São Pedro',
-    feastDay: '29 de Junho, 2026',
-    eveNight: '28 de Junho, 2026',
-    description:
-      'The final Santos Populares celebration. Smaller arraiais and the last sardines of the season.',
+    id: 'alfama',
+    name: 'Arraial de Alfama',
+    location: 'Alfama — Largo de São Miguel, Rua de São Miguel',
+    dates: '1–29 June 2026',
+    description: 'The heart of Santos Populares. Dense, winding streets, most traditional atmosphere. The one you cannot miss.',
+    highlight: true,
   },
-];
-
-const KEY_NEIGHBORHOODS = [
-  { name: 'Alfama', vibe: 'The heart of it all — dense, winding streets, the most traditional atmosphere' },
-  { name: 'Mouraria', vibe: 'Multicultural, birthplace of fado, diverse food from around the world' },
-  { name: 'Graça', vibe: 'Great viewpoints, excellent food, Vila Berta arraial' },
-  { name: 'Bica', vibe: 'Steep narrow streets near Elevador da Bica, intimate local feel' },
-  { name: 'Madragoa', vibe: 'Authentic, residential, traditional food stalls by local families' },
-  { name: 'Castelo', vibe: 'Colorful garlands near the castle walls, stunning views' },
-  { name: 'Bairro Alto', vibe: 'Nightlife hub meets arraial energy, younger crowd' },
-  { name: 'Campo de Ourique', vibe: 'Family-friendly, slightly off the tourist circuit' },
-  { name: 'Príncipe Real', vibe: 'The "hipster arraial" — fado/folk fusion, trendy crowd' },
-  { name: 'Penha de França', vibe: 'Very local neighborhood flavor, off the tourist radar' },
+  {
+    id: 'mouraria',
+    name: 'Arraial da Mouraria',
+    location: 'Mouraria — Largo da Severa, Rua do Capelão',
+    dates: '1–29 June 2026',
+    description: 'Multicultural, birthplace of fado. Diverse food from around the world alongside traditional Portuguese.',
+  },
+  {
+    id: 'graca',
+    name: 'Arraial da Graça',
+    location: 'Graça — Vila Berta, Largo da Graça',
+    dates: '1–29 June 2026',
+    description: 'Great viewpoints, excellent food. Vila Berta arraial is intimate and beautifully decorated.',
+  },
+  {
+    id: 'bica',
+    name: 'Arraial da Bica',
+    location: 'Bica — Rua da Bica de Duarte Belo',
+    dates: '12–13 June 2026',
+    description: 'Steep narrow streets near Elevador da Bica. Intimate, very local feel.',
+  },
+  {
+    id: 'madragoa',
+    name: 'Arraial da Madragoa',
+    location: 'Madragoa — Rua das Madres',
+    dates: '1–29 June 2026',
+    description: 'Authentic, residential. Traditional food stalls run by local families. Old Lisbon at its best.',
+  },
+  {
+    id: 'castelo',
+    name: 'Arraial do Castelo',
+    location: 'Castelo — near São Jorge Castle walls',
+    dates: '12–13 June 2026',
+    description: 'Colorful garlands near the castle, stunning views over the city while you eat sardines.',
+  },
+  {
+    id: 'bairro-alto',
+    name: 'Arraial do Bairro Alto',
+    location: 'Bairro Alto — Rua da Atalaia, Travessa da Cara',
+    dates: '1–29 June 2026',
+    description: 'Nightlife hub meets arraial energy. Younger crowd, bars spill into the streets.',
+  },
+  {
+    id: 'campo-ourique',
+    name: 'Arraial de Campo de Ourique',
+    location: 'Campo de Ourique — Rua Coelho da Rocha',
+    dates: '12–13 June 2026',
+    description: 'Family-friendly, slightly off the tourist circuit. Great for kids.',
+  },
+  {
+    id: 'principe-real',
+    name: 'Arraial do Príncipe Real',
+    location: 'Príncipe Real — Jardim do Príncipe Real',
+    dates: '12–13 June 2026',
+    description: 'The trendy arraial — fado/folk fusion, creative cocktails, hipster crowd.',
+  },
+  {
+    id: 'penha-franca',
+    name: 'Arraial da Penha de França',
+    location: 'Penha de França — Largo da Penha de França',
+    dates: '12–13 June 2026',
+    description: 'Very local neighborhood flavor, completely off the tourist radar. The real deal.',
+  },
+  {
+    id: 'sao-joao',
+    name: 'São João',
+    location: 'Citywide (main event is in Porto)',
+    dates: '23–24 June 2026',
+    description: 'Porto\'s main celebration. Lisbon has smaller festivities — plastic hammers, bonfires, midnight revelry.',
+  },
+  {
+    id: 'sao-pedro',
+    name: 'São Pedro',
+    location: 'Citywide',
+    dates: '28–29 June 2026',
+    description: 'The final Santos Populares celebration. Smaller arraiais and the last sardines of the season.',
+  },
 ];
 
 const TRADITIONS = [
@@ -55,7 +126,35 @@ const TRADITIONS = [
   { icon: '🥣', name: 'Caldo Verde', desc: 'Traditional kale soup, a festival staple' },
 ];
 
+const STORAGE_KEY = 'santos-populares-checked';
+
+function loadChecked(): Record<string, boolean> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
 export default function SantosPopulares() {
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setChecked(loadChecked());
+  }, []);
+
+  const toggleChecked = useCallback((id: string) => {
+    setChecked((prev) => {
+      const updated = { ...prev, [id]: !prev[id] };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const attendedCount = CONFIRMED_FESTIVALS.filter((f) => checked[f.id]).length;
+
   return (
     <div className="flex flex-col gap-5">
       {/* Hero */}
@@ -82,31 +181,97 @@ export default function SantosPopulares() {
         >
           Festas de Lisboa — Junho 2026
         </p>
+        <p className="mt-3 text-xs" style={{ color: '#8B7355' }}>
+          {attendedCount} of {CONFIRMED_FESTIVALS.length} attended
+        </p>
       </motion.div>
 
-      {/* Coming Soon notice */}
+      {/* Confirmed festivals checklist */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
-        className="rounded-2xl p-5 text-center"
+        className="rounded-2xl p-5"
         style={{
-          background: 'rgba(27, 75, 138, 0.08)',
+          background: 'rgba(255, 248, 240, 0.6)',
           backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(27, 75, 138, 0.2)',
+          border: '1px solid rgba(196, 149, 58, 0.2)',
         }}
       >
-        <p className="text-sm font-medium" style={{ color: '#1B4B8A' }}>
-          📋 Full 2026 arraial schedule — <strong>Coming Soon</strong>
-        </p>
-        <p className="mt-1 text-xs" style={{ color: '#8B7355' }}>
-          EGEAC typically publishes the full neighborhood-by-neighborhood program in April/May 2026.
-          Check back closer to June, or visit{' '}
-          <span style={{ color: '#1B4B8A', fontWeight: 600 }}>egeac.pt</span> for the official schedule.
-        </p>
+        <h3
+          className="mb-4 text-sm font-semibold uppercase tracking-wider"
+          style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
+        >
+          Confirmed Festivals
+        </h3>
+        <div className="flex flex-col gap-2">
+          {CONFIRMED_FESTIVALS.map((festival) => {
+            const isChecked = !!checked[festival.id];
+            return (
+              <button
+                key={festival.id}
+                onClick={() => toggleChecked(festival.id)}
+                className="flex items-start gap-3 rounded-xl px-3 py-3 text-left transition-all"
+                style={{
+                  background: isChecked
+                    ? 'rgba(27, 75, 138, 0.08)'
+                    : festival.highlight
+                      ? 'rgba(196, 149, 58, 0.1)'
+                      : 'rgba(196, 149, 58, 0.04)',
+                  border: isChecked
+                    ? '1px solid rgba(27, 75, 138, 0.25)'
+                    : festival.highlight
+                      ? '1px solid rgba(196, 149, 58, 0.25)'
+                      : '1px solid rgba(196, 149, 58, 0.1)',
+                  opacity: isChecked ? 0.7 : 1,
+                }}
+              >
+                {/* Checkbox */}
+                <div
+                  className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors"
+                  style={{
+                    borderColor: isChecked ? '#1B4B8A' : 'rgba(27, 75, 138, 0.3)',
+                    background: isChecked ? '#1B4B8A' : 'transparent',
+                  }}
+                >
+                  {isChecked && <Check size={12} color="#fff" strokeWidth={3} />}
+                </div>
+
+                {/* Content */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p
+                      className={`text-sm font-semibold ${isChecked ? 'line-through' : ''}`}
+                      style={{ color: '#1B4B8A' }}
+                    >
+                      {festival.name}
+                    </p>
+                    {festival.highlight && !isChecked && (
+                      <span
+                        className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase"
+                        style={{ background: '#C4953A', color: '#fff' }}
+                      >
+                        Must-go
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-0.5 text-xs font-medium" style={{ color: '#C4953A' }}>
+                    {festival.dates}
+                  </p>
+                  <p className="text-[11px]" style={{ color: '#8B7355' }}>
+                    📍 {festival.location}
+                  </p>
+                  <p className="mt-1 text-xs leading-relaxed" style={{ color: '#6B5A3E' }}>
+                    {festival.description}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </motion.div>
 
-      {/* Saint Days */}
+      {/* Traditions */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -122,106 +287,7 @@ export default function SantosPopulares() {
           className="mb-4 text-sm font-semibold uppercase tracking-wider"
           style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
         >
-          🎆 Key Dates
-        </h3>
-        <div className="flex flex-col gap-4">
-          {SAINT_DAYS.map((day, i) => (
-            <div
-              key={day.saint}
-              className="rounded-xl p-4"
-              style={{
-                background: i === 0 ? 'rgba(196, 149, 58, 0.12)' : 'rgba(196, 149, 58, 0.05)',
-                border: i === 0 ? '1px solid rgba(196, 149, 58, 0.3)' : '1px solid rgba(196, 149, 58, 0.1)',
-              }}
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-bold" style={{ color: '#1B4B8A' }}>
-                    {day.saint}
-                  </h4>
-                  <p className="text-xs font-medium" style={{ color: '#C4953A' }}>
-                    Feast: {day.feastDay}
-                  </p>
-                  <p className="text-[10px]" style={{ color: '#8B7355' }}>
-                    Main party night: {day.eveNight}
-                  </p>
-                </div>
-                {i === 0 && (
-                  <span
-                    className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
-                    style={{ background: '#C4953A', color: '#fff' }}
-                  >
-                    Peak
-                  </span>
-                )}
-              </div>
-              <p className="mt-2 text-xs leading-relaxed" style={{ color: '#6B5A3E' }}>
-                {day.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Neighborhoods */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="rounded-2xl p-5"
-        style={{
-          background: 'rgba(255, 248, 240, 0.6)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(196, 149, 58, 0.2)',
-        }}
-      >
-        <h3
-          className="mb-4 text-sm font-semibold uppercase tracking-wider"
-          style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
-        >
-          📍 Arraial Neighborhoods
-        </h3>
-        <div className="flex flex-col gap-2">
-          {KEY_NEIGHBORHOODS.map((n) => (
-            <div
-              key={n.name}
-              className="flex items-start gap-3 rounded-lg px-3 py-2.5"
-              style={{
-                background: 'rgba(196, 149, 58, 0.06)',
-                border: '1px solid rgba(196, 149, 58, 0.1)',
-              }}
-            >
-              <span className="mt-0.5 text-sm">🏘️</span>
-              <div>
-                <p className="text-sm font-semibold" style={{ color: '#1B4B8A' }}>
-                  {n.name}
-                </p>
-                <p className="text-xs" style={{ color: '#8B7355' }}>
-                  {n.vibe}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Traditions */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="rounded-2xl p-5"
-        style={{
-          background: 'rgba(255, 248, 240, 0.6)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(196, 149, 58, 0.2)',
-        }}
-      >
-        <h3
-          className="mb-4 text-sm font-semibold uppercase tracking-wider"
-          style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
-        >
-          🇵🇹 Traditions
+          Traditions
         </h3>
         <div className="grid grid-cols-2 gap-2">
           {TRADITIONS.map((t) => (
