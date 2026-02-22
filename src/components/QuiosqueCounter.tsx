@@ -158,8 +158,14 @@ export default function QuiosqueCounter() {
           border: '1px solid rgba(196, 149, 58, 0.25)',
         }}
       >
+        <h2
+          className="text-xl font-bold sm:text-2xl"
+          style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
+        >
+          Quiosque Counter
+        </h2>
         <p
-          className="text-xs font-medium uppercase tracking-[0.2em]"
+          className="mt-2 text-xs font-medium uppercase tracking-[0.2em]"
           style={{ color: '#8B7355', fontFamily: 'var(--font-display)' }}
         >
           Total Quiosque Time

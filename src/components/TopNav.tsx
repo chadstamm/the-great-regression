@@ -12,7 +12,7 @@ interface TopNavProps {
 
 const PORTUGAL_TABS: { id: PortugalTab; icon: string; label: string }[] = [
   { id: 'lista', icon: '🏠', label: 'LISTA' },
-  { id: 'quiosque', icon: '☕', label: 'QUIOSQUE' },
+  { id: 'quiosque', icon: '🍻', label: 'QUIOSQUE' },
   { id: 'festas', icon: '🎉', label: 'FESTAS' },
   { id: 'copa', icon: '⚽', label: 'COPA' },
 ];
