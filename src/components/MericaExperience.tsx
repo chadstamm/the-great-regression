@@ -43,7 +43,7 @@ const SNARK_CARDS: SnarkCard[] = [
     tag: 'CULINARY EFFICIENCY',
   },
   {
-    image: '/images/water-bottles.jpg',
+    image: '/images/water-obsession.jpg',
     title: 'Hydration Emergency',
     subtitle: "We're leaving the house — grab 47 water bottles",
     body: "Americans cannot go anywhere without a personal water supply like they're crossing the Sahara on foot. Going to Target? Better bring three Yeti bottles. Driving ten minutes to soccer practice? Pack a cooler. It's not like there will be water where you're going or anything. Every outing is treated like a survival expedition. Meanwhile in Lisbon, you walk for hours in 35°C heat and somehow survive with a single espresso and the occasional fountain. But sure, you definitely need that 64oz Stanley tumbler to sit in an air-conditioned office.",

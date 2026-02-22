@@ -68,7 +68,7 @@ export const SEED_ITEMS: Array<{
   { category: 'sites', title: 'Coaches Museum', note: null, added_by: 'Chad', initials: 'CS' },
   { category: 'sites', title: 'Bugio Lighthouse', note: null, added_by: 'Chad', initials: 'CS' },
   { category: 'sites', title: 'St. António Church and Museum', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'sites', title: 'Carcavelos wine tasting', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'experiences', title: 'Carcavelos wine tasting', note: null, added_by: 'Chad', initials: 'CS' },
   { category: 'sites', title: 'Marquês de Pombal Palace', note: null, added_by: 'Chad', initials: 'CS' },
   { category: 'restaurants', title: 'Brunch at Santa Joana', note: null, added_by: 'Chad', initials: 'CS' },
   { category: 'restaurants', title: 'Lunch in Évora', note: null, added_by: 'Chad', initials: 'CS' },
