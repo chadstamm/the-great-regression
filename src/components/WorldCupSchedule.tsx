@@ -286,6 +286,40 @@ export default function WorldCupSchedule() {
           <p>🏆 <strong>Top 2 from Group K advance</strong> to Round of 32</p>
         </div>
       </motion.div>
+
+      {/* Portugal Football Soundtrack */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+        className="rounded-2xl p-5"
+        style={{
+          background: 'rgba(255, 248, 240, 0.6)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(196, 149, 58, 0.2)',
+        }}
+      >
+        <h3
+          className="mb-1 text-sm font-semibold uppercase tracking-wider"
+          style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
+        >
+          🎵 Força Portugal
+        </h3>
+        <p className="mb-3 text-[11px]" style={{ color: '#8B7355' }}>
+          Seleção soundtrack — get match-day ready
+        </p>
+        <div className="overflow-hidden rounded-xl">
+          <iframe
+            src="https://open.spotify.com/embed/playlist/6RBde6T0OGzJzGyuXN7ThP?utm_source=generator"
+            width="100%"
+            height="352"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            className="rounded-xl"
+          />
+        </div>
+      </motion.div>
     </div>
   );
 }
