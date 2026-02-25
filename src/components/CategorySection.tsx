@@ -79,7 +79,9 @@ export default function CategorySection({
           </p>
         )}
 
-        <AddItemForm category={category} onAdd={onAdd} />
+        {filter !== 'done' && (
+          <AddItemForm category={category} onAdd={onAdd} />
+        )}
       </div>
     </motion.section>
   );

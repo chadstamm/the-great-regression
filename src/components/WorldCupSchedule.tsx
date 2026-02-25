@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 interface Match {
   matchday: number;
@@ -101,31 +102,41 @@ export default function WorldCupSchedule() {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Hero */}
+      {/* Azulejo Header Image */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex justify-center"
+      >
+        <div
+          className="relative w-full max-w-md overflow-hidden rounded-xl"
+          style={{ boxShadow: '0 4px 24px rgba(27, 75, 138, 0.12)' }}
+        >
+          <Image
+            src="/images/header-copa-v2.jpg"
+            alt="Copa do Mundo — Portugal 2026"
+            width={800}
+            height={450}
+            className="h-auto w-full"
+            priority
+          />
+        </div>
+      </motion.div>
+
+      {/* Group info */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl p-6 text-center"
+        transition={{ delay: 0.05 }}
+        className="rounded-2xl px-5 py-3 text-center"
         style={{
           background: 'rgba(255, 248, 240, 0.6)',
           backdropFilter: 'blur(12px)',
           border: '1px solid rgba(196, 149, 58, 0.25)',
         }}
       >
-        <p className="text-3xl">⚽🇵🇹</p>
-        <h2
-          className="mt-2 text-2xl font-bold sm:text-3xl"
-          style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
-        >
-          Copa do Mundo 2026
-        </h2>
-        <p
-          className="mt-1 text-sm italic"
-          style={{ color: '#C4953A', fontFamily: 'var(--font-display)' }}
-        >
-          Portugal — Grupo K
-        </p>
-        <p className="mt-2 text-xs" style={{ color: '#8B7355' }}>
+        <p className="text-xs" style={{ color: '#8B7355' }}>
           🇵🇹 Portugal · 🇨🇴 Colombia · 🇺🇿 Uzbekistan · TBD
         </p>
       </motion.div>

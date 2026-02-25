@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { BucketItem, Category, UserName } from '@/lib/types';
+import { BucketItem, Category } from '@/lib/types';
 import { SEED_ITEMS } from '@/lib/constants';
 
 function generateId() {
@@ -16,9 +16,10 @@ function buildLocalItems(): BucketItem[] {
     title: item.title,
     note: item.note,
     added_by: item.added_by,
-    initials: item.initials,
+    icon: item.icon,
     votes: [],
     is_done: false,
+    completed_at: null,
     created_at: new Date().toISOString(),
   }));
 }
@@ -59,7 +60,7 @@ export function useBucketItems() {
       title: item.title,
       note: item.note,
       added_by: item.added_by,
-      initials: item.initials,
+      icon: item.icon,
       votes: [],
       is_done: false,
     }));
@@ -117,8 +118,8 @@ export function useBucketItems() {
     category: Category,
     title: string,
     note: string | null,
-    addedBy: UserName,
-    initials: string = 'CS'
+    addedBy: string,
+    icon: string = 'caravel'
   ) => {
     if (isLocal) {
       setItems((prev) => [
@@ -129,9 +130,10 @@ export function useBucketItems() {
           title,
           note,
           added_by: addedBy,
-          initials,
+          icon,
           votes: [],
           is_done: false,
+          completed_at: null,
           created_at: new Date().toISOString(),
         },
       ]);
@@ -142,7 +144,7 @@ export function useBucketItems() {
       title,
       note,
       added_by: addedBy,
-      initials,
+      icon,
       votes: [],
       is_done: false,
     });
@@ -150,7 +152,7 @@ export function useBucketItems() {
     if (error) console.error('Error adding item:', error);
   };
 
-  const toggleVote = async (item: BucketItem, userName: UserName) => {
+  const toggleVote = async (item: BucketItem, userName: string) => {
     const hasVoted = item.votes.includes(userName);
     const newVotes = hasVoted
       ? item.votes.filter((v) => v !== userName)
@@ -171,15 +173,22 @@ export function useBucketItems() {
   };
 
   const toggleDone = async (item: BucketItem) => {
+    const newDone = !item.is_done;
+    const completedAt = newDone ? new Date().toISOString() : null;
+
     if (isLocal) {
       setItems((prev) =>
-        prev.map((i) => (i.id === item.id ? { ...i, is_done: !i.is_done } : i))
+        prev.map((i) =>
+          i.id === item.id
+            ? { ...i, is_done: newDone, completed_at: completedAt }
+            : i
+        )
       );
       return;
     }
     const { error } = await supabase
       .from('bucket_items')
-      .update({ is_done: !item.is_done })
+      .update({ is_done: newDone, completed_at: completedAt })
       .eq('id', item.id);
 
     if (error) console.error('Error toggling done:', error);

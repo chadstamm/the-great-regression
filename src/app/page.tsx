@@ -11,6 +11,7 @@ import TopNav, { PortugalTab } from '@/components/TopNav';
 import QuiosqueCounter from '@/components/QuiosqueCounter';
 import SantosPopulares from '@/components/SantosPopulares';
 import WorldCupSchedule from '@/components/WorldCupSchedule';
+import WelcomeModal from '@/components/WelcomeModal';
 
 function TabContent({ tab }: { tab: PortugalTab }) {
   return (
@@ -94,6 +95,8 @@ function AppContent() {
         )}
       </div>
 
+      {/* Welcome modal — shows on first visit only */}
+      <WelcomeModal />
     </div>
   );
 }

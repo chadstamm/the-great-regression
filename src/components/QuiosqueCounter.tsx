@@ -2,23 +2,33 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+import { Check } from 'lucide-react';
+import { useUser } from '@/contexts/UserContext';
 
 interface LogEntry {
   id: string;
   duration: number; // minutes
   date: string; // ISO string
   note: string;
+  people: string[]; // who was there
 }
 
 const STORAGE_KEY = 'quiosque-logs';
 const STOPWATCH_KEY = 'quiosque-stopwatch-start';
 const STOPWATCH_NOTE_KEY = 'quiosque-stopwatch-note';
+const STOPWATCH_PEOPLE_KEY = 'quiosque-stopwatch-people';
 
 function loadLogs(): LogEntry[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const parsed = raw ? JSON.parse(raw) : [];
+    // Migrate old entries that don't have people
+    return parsed.map((entry: LogEntry & { people?: string[] }) => ({
+      ...entry,
+      people: entry.people ?? [],
+    }));
   } catch {
     return [];
   }
@@ -39,15 +49,80 @@ function getLisbonTime(): string {
   return new Date().toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' });
 }
 
+function PeopleCheckboxes({
+  selected,
+  onChange,
+  knownPeople,
+}: {
+  selected: string[];
+  onChange: (people: string[]) => void;
+  knownPeople: string[];
+}) {
+  const toggle = (name: string) => {
+    if (selected.includes(name)) {
+      onChange(selected.filter((n) => n !== name));
+    } else {
+      onChange([...selected, name]);
+    }
+  };
+
+  return (
+    <div>
+      <label
+        className="mb-1.5 block text-[10px] font-medium uppercase tracking-wider"
+        style={{ color: '#8B7355' }}
+      >
+        Who&apos;s here?
+      </label>
+      <div className="flex flex-wrap gap-2">
+        {knownPeople.map((name) => {
+          const isSelected = selected.includes(name);
+          return (
+            <button
+              key={name}
+              type="button"
+              onClick={() => toggle(name)}
+              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all"
+              style={{
+                background: isSelected
+                  ? 'rgba(27, 75, 138, 0.12)'
+                  : 'rgba(196, 149, 58, 0.06)',
+                border: isSelected
+                  ? '1px solid rgba(27, 75, 138, 0.3)'
+                  : '1px solid rgba(196, 149, 58, 0.15)',
+                color: isSelected ? '#1B4B8A' : '#8B7355',
+              }}
+            >
+              <div
+                className="flex h-4 w-4 items-center justify-center rounded border transition-colors"
+                style={{
+                  borderColor: isSelected ? '#1B4B8A' : 'rgba(27, 75, 138, 0.3)',
+                  background: isSelected ? '#1B4B8A' : 'transparent',
+                }}
+              >
+                {isSelected && <Check size={10} color="#fff" strokeWidth={3} />}
+              </div>
+              {name}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function QuiosqueCounter() {
+  const { user } = useUser();
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [sessionNote, setSessionNote] = useState('');
+  const [sessionPeople, setSessionPeople] = useState<string[]>([]);
   const [showManual, setShowManual] = useState(false);
   const [manualHours, setManualHours] = useState('');
   const [manualMinutes, setManualMinutes] = useState('');
   const [manualNote, setManualNote] = useState('');
+  const [manualPeople, setManualPeople] = useState<string[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Load logs and check for active stopwatch
@@ -61,6 +136,12 @@ export default function QuiosqueCounter() {
     }
     const savedNote = localStorage.getItem(STOPWATCH_NOTE_KEY);
     if (savedNote) setSessionNote(savedNote);
+    const savedPeople = localStorage.getItem(STOPWATCH_PEOPLE_KEY);
+    if (savedPeople) {
+      try {
+        setSessionPeople(JSON.parse(savedPeople));
+      } catch { /* use default */ }
+    }
   }, []);
 
   // Stopwatch ticker
@@ -84,11 +165,33 @@ export default function QuiosqueCounter() {
   const totalHours = Math.floor(totalMinutes / 60);
   const remainingMinutes = Math.round(totalMinutes % 60);
 
+  // Build list of known people from logs + current user
+  const knownPeople = Array.from(
+    new Set([
+      ...(user?.name ? [user.name] : []),
+      ...logs.flatMap((l) => l.people),
+    ])
+  );
+
+  // Per-person scoreboard
+  const personStats = knownPeople.map((name) => {
+    const personLogs = logs.filter((l) => l.people.includes(name));
+    const mins = personLogs.reduce((sum, l) => sum + l.duration, 0);
+    return {
+      name,
+      totalMinutes: mins,
+      hours: Math.floor(mins / 60),
+      minutes: Math.round(mins % 60),
+      visits: personLogs.length,
+    };
+  });
+
   const handleStart = useCallback(() => {
     localStorage.setItem(STOPWATCH_KEY, String(Date.now()));
+    localStorage.setItem(STOPWATCH_PEOPLE_KEY, JSON.stringify(sessionPeople));
     setIsRunning(true);
     setElapsed(0);
-  }, []);
+  }, [sessionPeople]);
 
   const handleStop = useCallback(() => {
     const savedStart = localStorage.getItem(STOPWATCH_KEY);
@@ -99,6 +202,7 @@ export default function QuiosqueCounter() {
         duration: minutes,
         date: new Date().toISOString(),
         note: sessionNote.trim() || 'Live session',
+        people: sessionPeople.length > 0 ? sessionPeople : [],
       };
       const updated = [entry, ...logs];
       setLogs(updated);
@@ -106,14 +210,21 @@ export default function QuiosqueCounter() {
     }
     localStorage.removeItem(STOPWATCH_KEY);
     localStorage.removeItem(STOPWATCH_NOTE_KEY);
+    localStorage.removeItem(STOPWATCH_PEOPLE_KEY);
     setIsRunning(false);
     setElapsed(0);
     setSessionNote('');
-  }, [logs, sessionNote]);
+    setSessionPeople([]);
+  }, [logs, sessionNote, sessionPeople]);
 
   const handleSessionNoteChange = (value: string) => {
     setSessionNote(value);
     localStorage.setItem(STOPWATCH_NOTE_KEY, value);
+  };
+
+  const handleSessionPeopleChange = (people: string[]) => {
+    setSessionPeople(people);
+    localStorage.setItem(STOPWATCH_PEOPLE_KEY, JSON.stringify(people));
   };
 
   const handleManualAdd = useCallback(() => {
@@ -127,6 +238,7 @@ export default function QuiosqueCounter() {
       duration: total,
       date: new Date().toISOString(),
       note: manualNote || 'Manual entry',
+      people: manualPeople.length > 0 ? manualPeople : [],
     };
     const updated = [entry, ...logs];
     setLogs(updated);
@@ -134,8 +246,9 @@ export default function QuiosqueCounter() {
     setManualHours('');
     setManualMinutes('');
     setManualNote('');
+    setManualPeople([]);
     setShowManual(false);
-  }, [manualHours, manualMinutes, manualNote, logs]);
+  }, [manualHours, manualMinutes, manualNote, manualPeople, logs]);
 
   const handleDelete = useCallback((id: string) => {
     setLogs((prev) => {
@@ -147,10 +260,33 @@ export default function QuiosqueCounter() {
 
   return (
     <div className="flex flex-col gap-5">
+      {/* Azulejo Header Image */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex justify-center"
+      >
+        <div
+          className="relative w-full max-w-md overflow-hidden rounded-xl"
+          style={{ boxShadow: '0 4px 24px rgba(27, 75, 138, 0.12)' }}
+        >
+          <Image
+            src="/images/header-quiosque-v2.jpg"
+            alt="Quiosque Counter — Tempo no Quiosque 2026"
+            width={800}
+            height={450}
+            className="h-auto w-full"
+            priority
+          />
+        </div>
+      </motion.div>
+
       {/* Total counter */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
         className="rounded-2xl p-6 text-center"
         style={{
           background: 'rgba(255, 248, 240, 0.6)',
@@ -158,20 +294,13 @@ export default function QuiosqueCounter() {
           border: '1px solid rgba(196, 149, 58, 0.25)',
         }}
       >
-        <h2
-          className="text-xl font-bold sm:text-2xl"
-          style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
-        >
-          Quiosque Counter
-        </h2>
         <p
-          className="mt-2 text-xs font-medium uppercase tracking-[0.2em]"
+          className="text-xs font-medium uppercase tracking-[0.2em]"
           style={{ color: '#8B7355', fontFamily: 'var(--font-display)' }}
         >
           Total Quiosque Time
         </p>
 
-        {/* Large split display: hours and minutes clearly separated */}
         <div className="mt-3 flex items-baseline justify-center gap-1">
           <span
             className="text-5xl font-black tabular-nums sm:text-6xl"
@@ -207,6 +336,89 @@ export default function QuiosqueCounter() {
         </p>
       </motion.div>
 
+      {/* Per-person scoreboard */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.08 }}
+        className="rounded-2xl p-5"
+        style={{
+          background: 'rgba(255, 248, 240, 0.6)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(196, 149, 58, 0.2)',
+        }}
+      >
+        <h3
+          className="mb-3 text-center text-sm font-semibold uppercase tracking-wider"
+          style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
+        >
+          Scoreboard
+        </h3>
+        <div className="flex gap-3">
+          {personStats.map((person, i) => {
+            const isLeader =
+              personStats.length > 1 &&
+              person.totalMinutes > 0 &&
+              person.totalMinutes >= Math.max(...personStats.map((p) => p.totalMinutes));
+            return (
+              <div
+                key={person.name}
+                className="flex-1 rounded-xl p-4 text-center"
+                style={{
+                  background: isLeader
+                    ? 'rgba(27, 75, 138, 0.08)'
+                    : 'rgba(196, 149, 58, 0.06)',
+                  border: isLeader
+                    ? '1px solid rgba(27, 75, 138, 0.2)'
+                    : '1px solid rgba(196, 149, 58, 0.1)',
+                }}
+              >
+                <p
+                  className="text-sm font-bold"
+                  style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
+                >
+                  {person.name}
+                </p>
+                {isLeader && (
+                  <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#C4953A' }}>
+                    Leader
+                  </p>
+                )}
+                <div className="mt-2 flex items-baseline justify-center gap-0.5">
+                  <span
+                    className="text-2xl font-black tabular-nums"
+                    style={{ color: '#1B4B8A', fontFamily: 'var(--font-display)' }}
+                  >
+                    {person.hours}
+                  </span>
+                  <span
+                    className="text-[10px] font-bold uppercase"
+                    style={{ color: 'rgba(27, 75, 138, 0.5)' }}
+                  >
+                    hr
+                  </span>
+                  <span
+                    className="ml-1 text-2xl font-black tabular-nums"
+                    style={{ color: '#C4953A', fontFamily: 'var(--font-display)' }}
+                  >
+                    {person.minutes}
+                  </span>
+                  <span
+                    className="text-[10px] font-bold uppercase"
+                    style={{ color: 'rgba(196, 149, 58, 0.5)' }}
+                  >
+                    min
+                  </span>
+                </div>
+                <p className="mt-1 text-[10px]" style={{ color: '#8B7355' }}>
+                  {person.visits} {person.visits === 1 ? 'visit' : 'visits'}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </motion.div>
+
       {/* Stopwatch */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -238,6 +450,11 @@ export default function QuiosqueCounter() {
           >
             {formatTime(elapsed)}
           </motion.span>
+        </div>
+
+        {/* People checkboxes */}
+        <div className="mb-3">
+          <PeopleCheckboxes selected={sessionPeople} onChange={handleSessionPeopleChange} knownPeople={knownPeople} />
         </div>
 
         {/* Session note input */}
@@ -316,6 +533,9 @@ export default function QuiosqueCounter() {
               className="overflow-hidden"
             >
               <div className="mt-4 flex flex-col gap-3">
+                {/* People checkboxes for manual entry */}
+                <PeopleCheckboxes selected={manualPeople} onChange={setManualPeople} knownPeople={knownPeople} />
+
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <label className="mb-1 block text-[10px] font-medium uppercase tracking-wider" style={{ color: '#8B7355' }}>
@@ -440,9 +660,23 @@ export default function QuiosqueCounter() {
                     <p className="mt-0.5 text-xs" style={{ color: '#8B7355' }}>
                       {log.note}
                     </p>
-                    <p className="text-[10px]" style={{ color: '#a89070' }}>
-                      {new Date(log.date).toLocaleDateString('pt-PT', { timeZone: 'Europe/Lisbon' })}
-                    </p>
+                    <div className="mt-0.5 flex items-center gap-1">
+                      {log.people.map((name) => (
+                        <span
+                          key={name}
+                          className="rounded-full px-1.5 py-0.5 text-[9px] font-semibold"
+                          style={{
+                            background: 'rgba(27, 75, 138, 0.08)',
+                            color: '#1B4B8A',
+                          }}
+                        >
+                          {name}
+                        </span>
+                      ))}
+                      <span className="text-[10px]" style={{ color: '#a89070' }}>
+                        · {new Date(log.date).toLocaleDateString('pt-PT', { timeZone: 'Europe/Lisbon' })}
+                      </span>
+                    </div>
                   </div>
                   <button
                     onClick={() => handleDelete(log.id)}

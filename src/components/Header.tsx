@@ -25,7 +25,7 @@ export default function Header() {
               }}
             >
               <Image
-                src="/images/header-azulejo.jpg"
+                src="/images/header-azulejo-v3.jpg"
                 alt="Cada Minuto Conta — Portugal Bucket List 2026"
                 width={800}
                 height={600}

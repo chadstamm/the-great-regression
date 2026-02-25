@@ -1,13 +1,14 @@
 'use client';
 
+// NOTE: This component is no longer used — replaced by WelcomeModal.tsx
+// Kept for reference only. Safe to delete.
+
 import { motion } from 'framer-motion';
 import { useUser } from '@/contexts/UserContext';
 import { useMode } from '@/contexts/ModeContext';
-import { USERS } from '@/lib/constants';
-import { UserName } from '@/lib/types';
 
 export default function UserSelector() {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   const { mode } = useMode();
 
   // Only render the modal overlay when no user is selected
@@ -45,7 +46,7 @@ export default function UserSelector() {
             fontFamily: mode === 'portugal' ? 'var(--font-display)' : 'var(--font-body)',
           }}
         >
-          {mode === 'portugal' ? 'Quem és tu?' : "Who's ready to regress?"}
+          {mode === 'portugal' ? 'Quem es tu?' : "Who's ready to regress?"}
         </h2>
         <p
           className="mb-6 text-sm"
@@ -53,55 +54,9 @@ export default function UserSelector() {
             color: mode === 'portugal' ? '#6B5A3E' : '#888',
           }}
         >
-          {mode === 'portugal'
-            ? 'Escolha o seu nome'
-            : 'Pick your identity, patriot'}
+          This selector has been replaced by the Welcome Modal.
         </p>
-        <div className="grid grid-cols-2 gap-3">
-          {USERS.map((name) => (
-            <motion.button
-              key={name}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setUser(name)}
-              className="rounded-xl px-4 py-3 text-lg font-semibold transition-colors"
-              style={{
-                background:
-                  mode === 'portugal' ? '#1B4B8A' : '#DC2626',
-                color: '#fff',
-              }}
-            >
-              {name}
-            </motion.button>
-          ))}
-        </div>
       </motion.div>
     </motion.div>
-  );
-}
-
-export function UserSelectorInline({
-  onSelect,
-}: {
-  onSelect: (name: UserName) => void;
-}) {
-  const { mode } = useMode();
-
-  return (
-    <div className="flex gap-2">
-      {USERS.map((name) => (
-        <button
-          key={name}
-          onClick={() => onSelect(name)}
-          className="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
-          style={{
-            background: mode === 'portugal' ? '#1B4B8A' : '#DC2626',
-            color: '#fff',
-          }}
-        >
-          {name}
-        </button>
-      ))}
-    </div>
   );
 }

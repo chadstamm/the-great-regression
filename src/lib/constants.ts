@@ -1,6 +1,4 @@
-import { Category, UserName } from './types';
-
-export const USERS: UserName[] = ['Chad', 'Steve'];
+import { Category } from './types';
 
 export const CATEGORIES: Category[] = ['sites', 'restaurants', 'events', 'experiences'];
 
@@ -57,25 +55,38 @@ export const SEED_ITEMS: Array<{
   category: Category;
   title: string;
   note: string | null;
-  added_by: UserName;
-  initials: string;
+  added_by: string;
+  icon: string;
 }> = [
-  { category: 'sites', title: 'Fernando Pessoa Museum', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'sites', title: 'Gulbenkian Museum', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'sites', title: 'Roman artifacts in Alfama', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'sites', title: 'Ajuda Palace', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'sites', title: 'MAAT', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'sites', title: 'Coaches Museum', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'sites', title: 'Bugio Lighthouse', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'sites', title: 'St. António Church and Museum', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'experiences', title: 'Carcavelos wine tasting', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'sites', title: 'Marquês de Pombal Palace', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'restaurants', title: 'Brunch at Santa Joana', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'restaurants', title: 'Lunch in Évora', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'restaurants', title: 'Lunch in Setúbal', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'events', title: 'Ana Moura concert', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'experiences', title: 'Metro photography day (station art)', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'experiences', title: 'Ferry to Seixal', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'experiences', title: 'Learn the Portuguese bread styles by name', note: null, added_by: 'Chad', initials: 'CS' },
-  { category: 'experiences', title: 'Grill fish from the mercado', note: null, added_by: 'Chad', initials: 'CS' },
+  { category: 'sites', title: 'Fernando Pessoa Museum', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'sites', title: 'Gulbenkian Museum', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'sites', title: 'Roman artifacts in Alfama', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'sites', title: 'Ajuda Palace', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'sites', title: 'MAAT', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'sites', title: 'Coaches Museum', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'sites', title: 'Bugio Lighthouse', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'sites', title: 'St. Antonio Church and Museum', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'experiences', title: 'Carcavelos wine tasting', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'sites', title: 'Marques de Pombal Palace', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'restaurants', title: 'Brunch at Santa Joana', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'restaurants', title: 'Lunch in Evora', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'restaurants', title: 'Lunch in Setubal', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'events', title: 'Ana Moura concert', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'experiences', title: 'Metro photography day (station art)', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'experiences', title: 'Ferry to Seixal', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'experiences', title: 'Learn the Portuguese bread styles by name', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'experiences', title: 'Grill fish from the mercado', note: null, added_by: 'Chad', icon: 'caravel' },
 ];
+
+export const USER_ICONS = [
+  { id: 'caravel', label: 'Caravel', file: 'caravel.jpg' },
+  { id: 'armillary', label: 'Armillary Sphere', file: 'armillary.jpg' },
+  { id: 'tram', label: 'Tram 28', file: 'tram.jpg' },
+  { id: 'sardine', label: 'Sardine', file: 'sardine.jpg' },
+  { id: 'rooster', label: 'Galo de Barcelos', file: 'rooster.jpg' },
+  { id: 'guitar', label: 'Portuguese Guitar', file: 'guitar.jpg' },
+  { id: 'heart', label: 'Coracao de Viana', file: 'heart.jpg' },
+  { id: 'cross', label: 'Cross of Christ', file: 'cross.jpg' },
+] as const;
+
+export type UserIconId = typeof USER_ICONS[number]['id'];

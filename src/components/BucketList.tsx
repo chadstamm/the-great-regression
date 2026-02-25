@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useMode } from '@/contexts/ModeContext';
+import { useUser } from '@/contexts/UserContext';
 import { useBucketItems } from '@/hooks/useBucketItems';
 import { CATEGORIES } from '@/lib/constants';
 import { FilterStatus } from '@/lib/types';
@@ -10,6 +11,7 @@ import CategorySection from './CategorySection';
 
 export default function BucketList() {
   const { mode } = useMode();
+  const { user } = useUser();
   const { items, loading, addItem, toggleDone, removeItem } =
     useBucketItems();
   const [filter, setFilter] = useState<FilterStatus>('all');
@@ -30,6 +32,9 @@ export default function BucketList() {
     );
   }
 
+  const userName = user?.name || 'Guest';
+  const userIcon = user?.icon || 'caravel';
+
   return (
     <div>
       <div className="mb-6 flex justify-center">
@@ -45,7 +50,7 @@ export default function BucketList() {
             items={categoryItems}
             filter={filter}
             onAdd={(title, note) => {
-              addItem(category, title, note, 'Chad');
+              addItem(category, title, note, userName, userIcon);
             }}
             onToggleDone={(item) => toggleDone(item)}
             onRemove={(id) => removeItem(id)}

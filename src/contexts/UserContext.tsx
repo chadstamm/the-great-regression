@@ -1,38 +1,146 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { UserName } from '@/lib/types';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { supabase } from '@/lib/supabase';
+import { UserProfile } from '@/lib/types';
 
 interface UserContextType {
-  user: UserName | null;
-  setUser: (name: UserName) => void;
+  user: UserProfile | null;
+  loading: boolean;
+  createUser: (name: string, icon: string) => Promise<void>;
+  dismissWelcome: () => void;
+  showWelcome: boolean;
+  logout: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'tgr-user-id';
+const DISMISSED_KEY = 'tgr-welcome-dismissed';
+
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUserState] = useState<UserName | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // On mount: check localStorage for existing user ID, validate against Supabase
   useEffect(() => {
-    const saved = localStorage.getItem('app-user') as UserName | null;
-    if (saved) {
-      setUserState(saved);
+    async function loadUser() {
+      try {
+        const savedId = localStorage.getItem(STORAGE_KEY);
+        const wasDismissed = localStorage.getItem(DISMISSED_KEY);
+
+        console.log('[UserContext] mount check:', { savedId, wasDismissed, hasSupabase: !!supabase });
+
+        if (savedId && supabase) {
+          const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', savedId)
+            .single();
+
+          if (data && !error) {
+            setUser(data as UserProfile);
+            setLoading(false);
+            setMounted(true);
+            return;
+          }
+          // Invalid ID — clear it
+          localStorage.removeItem(STORAGE_KEY);
+        }
+
+        if (savedId && !supabase) {
+          // Offline mode: reconstruct from localStorage
+          const savedName = localStorage.getItem('tgr-user-name');
+          const savedIcon = localStorage.getItem('tgr-user-icon');
+          if (savedName) {
+            setUser({
+              id: savedId,
+              name: savedName,
+              icon: savedIcon || 'caravel',
+              created_at: new Date().toISOString(),
+            });
+            setLoading(false);
+            setMounted(true);
+            return;
+          }
+        }
+
+        // No user found — show welcome modal (unless previously dismissed)
+        if (!wasDismissed) {
+          console.log('[UserContext] showing welcome modal');
+          setShowWelcome(true);
+        }
+      } catch (e) {
+        console.error('[UserContext] error loading user:', e);
+      }
+      setLoading(false);
+      setMounted(true);
     }
-    setMounted(true);
+
+    loadUser();
   }, []);
 
-  const setUser = (name: UserName) => {
-    setUserState(name);
-    localStorage.setItem('app-user', name);
-  };
+  const createUser = useCallback(async (name: string, icon: string) => {
+    if (supabase) {
+      const { data, error } = await supabase
+        .from('users')
+        .insert({ name, icon })
+        .select()
+        .single();
 
+      if (error) {
+        console.error('Error creating user:', error);
+        return;
+      }
+
+      const profile = data as UserProfile;
+      localStorage.setItem(STORAGE_KEY, profile.id);
+      localStorage.setItem('tgr-user-name', profile.name);
+      localStorage.setItem('tgr-user-icon', profile.icon);
+      setUser(profile);
+    } else {
+      // Local-only mode
+      const profile: UserProfile = {
+        id: crypto.randomUUID(),
+        name,
+        icon,
+        created_at: new Date().toISOString(),
+      };
+      localStorage.setItem(STORAGE_KEY, profile.id);
+      localStorage.setItem('tgr-user-name', profile.name);
+      localStorage.setItem('tgr-user-icon', profile.icon);
+      setUser(profile);
+    }
+
+    setShowWelcome(false);
+    localStorage.removeItem(DISMISSED_KEY);
+  }, []);
+
+  const dismissWelcome = useCallback(() => {
+    localStorage.setItem(DISMISSED_KEY, 'true');
+    setShowWelcome(false);
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('tgr-user-name');
+    localStorage.removeItem('tgr-user-icon');
+    localStorage.removeItem(DISMISSED_KEY);
+    setUser(null);
+    setShowWelcome(true);
+  }, []);
+
+  // Don't render anything until we've checked localStorage
   if (!mounted) {
     return null;
   }
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider
+      value={{ user, loading, createUser, dismissWelcome, showWelcome, logout }}
+    >
       {children}
     </UserContext.Provider>
   );

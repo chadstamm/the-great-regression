@@ -5,6 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, Star } from 'lucide-react';
 import { useMode } from '@/contexts/ModeContext';
 import { BucketItem as BucketItemType } from '@/lib/types';
+import { USER_ICONS } from '@/lib/constants';
+
+function getIconFile(iconId: string): string {
+  const found = USER_ICONS.find((i) => i.id === iconId);
+  return found ? found.file : 'caravel.jpg';
+}
 
 export default function BucketItem({
   item,
@@ -134,6 +140,17 @@ export default function BucketItem({
                   {mode === 'portugal' ? 'Done!' : 'MISSION ACCOMPLISHED'}
                 </motion.span>
               )}
+              {isDone && item.completed_at && (
+                <span
+                  className="shrink-0 text-[10px]"
+                  style={{ color: mode === 'portugal' ? '#A89070' : '#555' }}
+                >
+                  {new Date(item.completed_at).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </span>
+              )}
             </AnimatePresence>
           </div>
 
@@ -149,18 +166,13 @@ export default function BucketItem({
           )}
         </div>
 
-        {/* Initials badge — right side */}
-        <div
-          className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold"
-          style={{
-            background:
-              mode === 'portugal'
-                ? 'rgba(27, 75, 138, 0.1)'
-                : 'rgba(255, 255, 255, 0.08)',
-            color: mode === 'portugal' ? '#1B4B8A' : '#888',
-          }}
-        >
-          {item.initials || '??'}
+        {/* Icon badge — right side */}
+        <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center">
+          <img
+            src={`/images/icons/${getIconFile(item.icon)}`}
+            alt={item.added_by}
+            className="h-7 w-7 rounded-full object-cover"
+          />
         </div>
 
         {/* Remove button */}
