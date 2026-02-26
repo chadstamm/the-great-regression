@@ -586,7 +586,7 @@ export default function MericaExperience() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mt-3 text-center text-[9px] font-medium uppercase tracking-[0.08em] sm:text-xs sm:tracking-[0.2em]"
+          className="mt-5 text-center text-[9px] font-medium uppercase tracking-[0.08em] sm:text-xs sm:tracking-[0.2em]"
           style={{ color: '#FBBF24' }}
         >
           {daysLeft} days until you drink coffee out of cardboard in a parking lot
