@@ -2,7 +2,7 @@ import { Category } from './types';
 
 export const CATEGORIES: Category[] = ['sites', 'restaurants', 'events', 'experiences'];
 
-export const DEPARTURE_DATE = new Date('2026-08-15T00:00:00+01:00');
+export const DEPARTURE_DATE = new Date('2026-08-01T00:00:00+01:00');
 
 export const CATEGORY_LABELS: Record<Category, Record<string, string>> = {
   sites: {

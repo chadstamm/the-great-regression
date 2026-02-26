@@ -122,7 +122,7 @@ export default function TopNav({ activeTab, onTabChange }: TopNavProps) {
             <span>
               {isPortugal
                 ? "Switch to 'Merica Mode"
-                : 'Move Back Home to Portugal Mode'}
+                : 'Back to Portugal Mode'}
             </span>
           </button>
         </div>
