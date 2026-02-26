@@ -14,7 +14,7 @@ const PORTUGAL_TABS: { id: PortugalTab; icon: string; label: string }[] = [
   { id: 'lista', icon: '🏠', label: 'LISTA' },
   { id: 'quiosque', icon: '🍻', label: 'QUIOSQUE' },
   { id: 'festas', icon: '🎉', label: 'FESTAS' },
-  { id: 'miradouros', icon: '🏔️', label: 'VISTAS' },
+  { id: 'miradouros', icon: '🏔️', label: 'MIRADOUROS' },
   { id: 'copa', icon: '⚽', label: 'COPA' },
 ];
 
