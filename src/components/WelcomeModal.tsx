@@ -12,7 +12,7 @@ export default function WelcomeModal() {
   const [name, setName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
-  const [takenIcons, setTakenIcons] = useState<Set<string>>(new Set());
+  const [takenIcons, setTakenIcons] = useState<Map<string, string>>(new Map());
 
   // Fetch icons already claimed by existing users
   useEffect(() => {
@@ -20,9 +20,9 @@ export default function WelcomeModal() {
 
     async function fetchTakenIcons() {
       if (!supabase) return;
-      const { data } = await supabase.from('users').select('icon');
+      const { data } = await supabase.from('users').select('icon, name');
       if (data) {
-        const taken = new Set(data.map((u: { icon: string }) => u.icon));
+        const taken = new Map(data.map((u: { icon: string; name: string }) => [u.icon, u.name]));
         setTakenIcons(taken);
         // If current selection is taken, pick the first available
         const firstAvailable = USER_ICONS.find((i) => !taken.has(i.id));
@@ -225,7 +225,7 @@ export default function WelcomeModal() {
                               : '#8B7355',
                         }}
                       >
-                        {isTaken ? 'Taken' : icon.label}
+                        {isTaken ? takenIcons.get(icon.id) : icon.label}
                       </span>
                       {isSelected && !isTaken && (
                         <motion.div
