@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useMode } from '@/contexts/ModeContext';
 
-export type PortugalTab = 'lista' | 'quiosque' | 'festas' | 'copa';
+export type PortugalTab = 'lista' | 'quiosque' | 'festas' | 'miradouros' | 'copa';
 
 interface TopNavProps {
   activeTab: PortugalTab;
@@ -14,6 +14,7 @@ const PORTUGAL_TABS: { id: PortugalTab; icon: string; label: string }[] = [
   { id: 'lista', icon: '🏠', label: 'LISTA' },
   { id: 'quiosque', icon: '🍻', label: 'QUIOSQUE' },
   { id: 'festas', icon: '🎉', label: 'FESTAS' },
+  { id: 'miradouros', icon: '🏔️', label: 'VISTAS' },
   { id: 'copa', icon: '⚽', label: 'COPA' },
 ];
 
@@ -41,7 +42,7 @@ export default function TopNav({ activeTab, onTabChange }: TopNavProps) {
                 <button
                   key={tab.id}
                   onClick={() => onTabChange(tab.id)}
-                  className="relative flex flex-1 items-center justify-center gap-1 py-3 text-sm font-black tracking-wide transition-colors sm:text-base"
+                  className="relative flex flex-1 items-center justify-center gap-0.5 py-3 text-[11px] font-black tracking-wide transition-colors sm:gap-1 sm:text-sm"
                   style={{
                     color:
                       activeTab === tab.id

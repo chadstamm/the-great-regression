@@ -11,6 +11,7 @@ import TopNav, { PortugalTab } from '@/components/TopNav';
 import QuiosqueCounter from '@/components/QuiosqueCounter';
 import SantosPopulares from '@/components/SantosPopulares';
 import WorldCupSchedule from '@/components/WorldCupSchedule';
+import Miradouros from '@/components/Miradouros';
 import WelcomeModal from '@/components/WelcomeModal';
 
 function TabContent({ tab }: { tab: PortugalTab }) {
@@ -31,6 +32,7 @@ function TabContent({ tab }: { tab: PortugalTab }) {
         )}
         {tab === 'quiosque' && <QuiosqueCounter />}
         {tab === 'festas' && <SantosPopulares />}
+        {tab === 'miradouros' && <Miradouros />}
         {tab === 'copa' && <WorldCupSchedule />}
       </motion.div>
     </AnimatePresence>

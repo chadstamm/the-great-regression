@@ -586,10 +586,10 @@ export default function MericaExperience() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mt-3 text-center text-xs font-medium uppercase tracking-[0.3em]"
+          className="mt-3 text-center text-[10px] font-medium uppercase tracking-[0.15em] sm:text-xs sm:tracking-[0.3em]"
           style={{ color: '#FBBF24' }}
         >
-          {daysLeft} days until freedom costs $20/dozen
+          {daysLeft} days until you drink coffee out of cardboard
         </motion.p>
       </div>
 
