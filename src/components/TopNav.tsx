@@ -10,12 +10,12 @@ interface TopNavProps {
   onTabChange: (tab: PortugalTab) => void;
 }
 
-const PORTUGAL_TABS: { id: PortugalTab; icon: string; label: string }[] = [
-  { id: 'lista', icon: '🏠', label: 'LISTA' },
-  { id: 'quiosque', icon: '🍻', label: 'QUIOSQUE' },
-  { id: 'festas', icon: '🎉', label: 'FESTAS' },
-  { id: 'miradouros', icon: '🏔️', label: 'MIRADOUROS' },
-  { id: 'copa', icon: '⚽', label: 'COPA' },
+const PORTUGAL_TABS: { id: PortugalTab; label: string }[] = [
+  { id: 'lista', label: 'LISTA' },
+  { id: 'quiosque', label: 'QUIOSQUE' },
+  { id: 'festas', label: 'FESTAS' },
+  { id: 'miradouros', label: 'MIRADOUROS' },
+  { id: 'copa', label: 'COPA' },
 ];
 
 export default function TopNav({ activeTab, onTabChange }: TopNavProps) {
@@ -50,7 +50,6 @@ export default function TopNav({ activeTab, onTabChange }: TopNavProps) {
                         : 'rgba(255, 255, 255, 0.45)',
                   }}
                 >
-                  <span>{tab.icon}</span>
                   <span>{tab.label}</span>
                   {activeTab === tab.id && (
                     <motion.div
