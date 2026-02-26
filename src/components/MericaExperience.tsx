@@ -589,7 +589,7 @@ export default function MericaExperience() {
           className="mt-5 text-center text-[9px] font-medium uppercase tracking-[0.08em] sm:text-xs sm:tracking-[0.2em]"
           style={{ color: '#FBBF24' }}
         >
-          {daysLeft} days until you drink coffee out of cardboard in a parking lot
+          {daysLeft} days until you drink coffee out of a cardboard cup in a parking lot
         </motion.p>
       </div>
 
