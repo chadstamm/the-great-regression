@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
 import { USER_ICONS } from '@/lib/constants';
 import { supabase } from '@/lib/supabase';
 
 export default function WelcomeModal() {
-  const { showWelcome, createUser, dismissWelcome } = useUser();
+  const { showWelcome, createUser } = useUser();
   const [name, setName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
@@ -64,15 +63,6 @@ export default function WelcomeModal() {
           className="azulejo-header-pattern pointer-events-none absolute inset-0"
           style={{ opacity: 0.08 }}
         />
-
-        {/* Close/Skip button */}
-        <button
-          onClick={dismissWelcome}
-          className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-          style={{ background: 'rgba(255,255,255,0.1)' }}
-        >
-          <X size={20} color="#fff" />
-        </button>
 
         <motion.div
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -262,14 +252,6 @@ export default function WelcomeModal() {
               {submitting ? 'Creating...' : "Let's Go"}
             </motion.button>
 
-            {/* Skip link */}
-            <button
-              onClick={dismissWelcome}
-              className="mt-3 w-full py-2 text-center text-xs font-medium transition-colors"
-              style={{ color: '#A89070' }}
-            >
-              Skip for now
-            </button>
           </div>
         </motion.div>
       </motion.div>

@@ -16,7 +16,6 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'tgr-user-id';
-const DISMISSED_KEY = 'tgr-welcome-dismissed';
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -29,9 +28,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     async function loadUser() {
       try {
         const savedId = localStorage.getItem(STORAGE_KEY);
-        const wasDismissed = localStorage.getItem(DISMISSED_KEY);
-
-        console.log('[UserContext] mount check:', { savedId, wasDismissed, hasSupabase: !!supabase });
 
         if (savedId && supabase) {
           const { data, error } = await supabase
@@ -67,11 +63,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
           }
         }
 
-        // No user found — show welcome modal (unless previously dismissed)
-        if (!wasDismissed) {
-          console.log('[UserContext] showing welcome modal');
-          setShowWelcome(true);
-        }
+        // No user found — show welcome modal
+        setShowWelcome(true);
       } catch (e) {
         console.error('[UserContext] error loading user:', e);
       }
@@ -115,11 +108,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
 
     setShowWelcome(false);
-    localStorage.removeItem(DISMISSED_KEY);
   }, []);
 
   const dismissWelcome = useCallback(() => {
-    localStorage.setItem(DISMISSED_KEY, 'true');
     setShowWelcome(false);
   }, []);
 
@@ -127,7 +118,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem('tgr-user-name');
     localStorage.removeItem('tgr-user-icon');
-    localStorage.removeItem(DISMISSED_KEY);
     setUser(null);
     setShowWelcome(true);
   }, []);
