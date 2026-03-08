@@ -133,6 +133,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem('tgr-user-name');
     localStorage.removeItem('tgr-user-icon');
+    // Clear legacy localStorage data
+    localStorage.removeItem('quiosque-logs');
+    localStorage.removeItem('quiosque-stopwatch-start');
+    localStorage.removeItem('quiosque-stopwatch-note');
+    localStorage.removeItem('quiosque-stopwatch-people');
+    localStorage.removeItem('santos-populares-checked');
+    localStorage.removeItem('miradouros-checked');
     setUser(null);
     setShowWelcome(true);
   }, []);
