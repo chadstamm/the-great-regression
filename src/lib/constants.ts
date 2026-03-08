@@ -69,8 +69,8 @@ export const SEED_ITEMS: Array<{
   { category: 'experiences', title: 'Carcavelos wine tasting', note: null, added_by: 'Chad', icon: 'caravel' },
   { category: 'sites', title: 'Marques de Pombal Palace', note: null, added_by: 'Chad', icon: 'caravel' },
   { category: 'restaurants', title: 'Brunch at Santa Joana', note: null, added_by: 'Chad', icon: 'caravel' },
-  { category: 'restaurants', title: 'Lunch in Evora', note: null, added_by: 'Chad', icon: 'caravel' },
-  { category: 'restaurants', title: 'Lunch in Setubal', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'restaurants', title: 'Lunch in Évora', note: null, added_by: 'Chad', icon: 'caravel' },
+  { category: 'restaurants', title: 'Lunch in Setúbal', note: null, added_by: 'Chad', icon: 'caravel' },
   { category: 'events', title: 'Ana Moura concert', note: null, added_by: 'Chad', icon: 'caravel' },
   { category: 'experiences', title: 'Metro photography day (station art)', note: null, added_by: 'Chad', icon: 'caravel' },
   { category: 'experiences', title: 'Ferry to Seixal', note: null, added_by: 'Chad', icon: 'caravel' },
@@ -85,7 +85,7 @@ export const USER_ICONS = [
   { id: 'sardine', label: 'Sardinha', file: 'sardine.jpg' },
   { id: 'rooster', label: 'Galo de Barcelos', file: 'rooster.jpg' },
   { id: 'guitar', label: 'Portuguese Guitar', file: 'guitar.jpg' },
-  { id: 'heart', label: 'Coracao de Viana', file: 'heart.jpg' },
+  { id: 'heart', label: 'Coração de Viana', file: 'heart.jpg' },
   { id: 'cross', label: 'Cruz de Cristo', file: 'cross.jpg' },
 ] as const;
 
