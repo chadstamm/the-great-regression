@@ -3,26 +3,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { BucketItem, Category } from '@/lib/types';
-import { SEED_ITEMS } from '@/lib/constants';
-
-function generateId() {
-  return crypto.randomUUID();
-}
-
-function buildLocalItems(): BucketItem[] {
-  return SEED_ITEMS.map((item) => ({
-    id: generateId(),
-    category: item.category,
-    title: item.title,
-    note: item.note,
-    added_by: item.added_by,
-    icon: item.icon,
-    votes: [],
-    is_done: false,
-    completed_at: null,
-    created_at: new Date().toISOString(),
-  }));
-}
 
 export function useBucketItems() {
   const [items, setItems] = useState<BucketItem[]>([]);
@@ -31,7 +11,7 @@ export function useBucketItems() {
 
   const fetchItems = useCallback(async () => {
     if (!supabase) {
-      setItems(buildLocalItems());
+      setItems([]);
       setLoading(false);
       return;
     }
@@ -42,42 +22,13 @@ export function useBucketItems() {
 
     if (error) {
       console.error('Error fetching items:', error);
-      return;
-    }
-
-    if (data && data.length === 0) {
-      await seedItems();
+      setLoading(false);
       return;
     }
 
     setItems((data as BucketItem[]) || []);
     setLoading(false);
   }, []);
-
-  const seedItems = async () => {
-    const rows = SEED_ITEMS.map((item) => ({
-      category: item.category,
-      title: item.title,
-      note: item.note,
-      added_by: item.added_by,
-      icon: item.icon,
-      votes: [],
-      is_done: false,
-    }));
-
-    const { data, error } = await supabase
-      .from('bucket_items')
-      .insert(rows)
-      .select();
-
-    if (error) {
-      console.error('Error seeding items:', error);
-      return;
-    }
-
-    setItems((data as BucketItem[]) || []);
-    setLoading(false);
-  };
 
   useEffect(() => {
     fetchItems();
@@ -125,7 +76,7 @@ export function useBucketItems() {
       setItems((prev) => [
         ...prev,
         {
-          id: generateId(),
+          id: crypto.randomUUID(),
           category,
           title,
           note,
