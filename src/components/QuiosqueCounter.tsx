@@ -5,38 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { Check } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
+import { supabase } from '@/lib/supabase';
+import { useQuiosqueLogs } from '@/hooks/useQuiosqueLogs';
 
-interface LogEntry {
-  id: string;
-  duration: number; // minutes
-  date: string; // ISO string
-  note: string;
-  people: string[]; // who was there
-}
-
-const STORAGE_KEY = 'quiosque-logs';
 const STOPWATCH_KEY = 'quiosque-stopwatch-start';
 const STOPWATCH_NOTE_KEY = 'quiosque-stopwatch-note';
 const STOPWATCH_PEOPLE_KEY = 'quiosque-stopwatch-people';
-
-function loadLogs(): LogEntry[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    // Migrate old entries that don't have people
-    return parsed.map((entry: LogEntry & { people?: string[] }) => ({
-      ...entry,
-      people: entry.people ?? [],
-    }));
-  } catch {
-    return [];
-  }
-}
-
-function saveLogs(logs: LogEntry[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-}
 
 function formatTime(seconds: number): string {
   const h = Math.floor(seconds / 3600);
@@ -113,7 +87,8 @@ function PeopleCheckboxes({
 
 export default function QuiosqueCounter() {
   const { user } = useUser();
-  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const { logs, addLog, removeLog } = useQuiosqueLogs();
+  const [allUsers, setAllUsers] = useState<string[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [sessionNote, setSessionNote] = useState('');
@@ -125,9 +100,23 @@ export default function QuiosqueCounter() {
   const [manualPeople, setManualPeople] = useState<string[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Load logs and check for active stopwatch
+  // Fetch all signed-up users from Supabase
   useEffect(() => {
-    setLogs(loadLogs());
+    async function fetchUsers() {
+      if (!supabase) return;
+      const { data, error } = await supabase
+        .from('users')
+        .select('name')
+        .order('created_at', { ascending: true });
+      if (data && !error) {
+        setAllUsers(data.map((u: { name: string }) => u.name));
+      }
+    }
+    fetchUsers();
+  }, []);
+
+  // Check for active stopwatch on mount
+  useEffect(() => {
     const savedStart = localStorage.getItem(STOPWATCH_KEY);
     if (savedStart) {
       setIsRunning(true);
@@ -165,9 +154,10 @@ export default function QuiosqueCounter() {
   const totalHours = Math.floor(totalMinutes / 60);
   const remainingMinutes = Math.round(totalMinutes % 60);
 
-  // Build list of known people from logs + current user
+  // Build list of known people from all signed-up users + log history
   const knownPeople = Array.from(
     new Set([
+      ...allUsers,
       ...(user?.name ? [user.name] : []),
       ...logs.flatMap((l) => l.people),
     ])
@@ -193,20 +183,16 @@ export default function QuiosqueCounter() {
     setElapsed(0);
   }, [sessionPeople]);
 
-  const handleStop = useCallback(() => {
+  const handleStop = useCallback(async () => {
     const savedStart = localStorage.getItem(STOPWATCH_KEY);
     if (savedStart) {
       const minutes = Math.max(1, Math.round((Date.now() - parseInt(savedStart)) / 60000));
-      const entry: LogEntry = {
-        id: Date.now().toString(),
-        duration: minutes,
-        date: new Date().toISOString(),
-        note: sessionNote.trim() || 'Live session',
-        people: sessionPeople.length > 0 ? sessionPeople : [],
-      };
-      const updated = [entry, ...logs];
-      setLogs(updated);
-      saveLogs(updated);
+      await addLog(
+        minutes,
+        new Date().toISOString(),
+        sessionNote.trim() || 'Live session',
+        sessionPeople.length > 0 ? sessionPeople : []
+      );
     }
     localStorage.removeItem(STOPWATCH_KEY);
     localStorage.removeItem(STOPWATCH_NOTE_KEY);
@@ -215,7 +201,7 @@ export default function QuiosqueCounter() {
     setElapsed(0);
     setSessionNote('');
     setSessionPeople([]);
-  }, [logs, sessionNote, sessionPeople]);
+  }, [addLog, sessionNote, sessionPeople]);
 
   const handleSessionNoteChange = (value: string) => {
     setSessionNote(value);
@@ -227,36 +213,28 @@ export default function QuiosqueCounter() {
     localStorage.setItem(STOPWATCH_PEOPLE_KEY, JSON.stringify(people));
   };
 
-  const handleManualAdd = useCallback(() => {
+  const handleManualAdd = useCallback(async () => {
     const h = parseInt(manualHours) || 0;
     const m = parseInt(manualMinutes) || 0;
     const total = h * 60 + m;
     if (total <= 0) return;
 
-    const entry: LogEntry = {
-      id: Date.now().toString(),
-      duration: total,
-      date: new Date().toISOString(),
-      note: manualNote || 'Manual entry',
-      people: manualPeople.length > 0 ? manualPeople : [],
-    };
-    const updated = [entry, ...logs];
-    setLogs(updated);
-    saveLogs(updated);
+    await addLog(
+      total,
+      new Date().toISOString(),
+      manualNote || 'Manual entry',
+      manualPeople.length > 0 ? manualPeople : []
+    );
     setManualHours('');
     setManualMinutes('');
     setManualNote('');
     setManualPeople([]);
     setShowManual(false);
-  }, [manualHours, manualMinutes, manualNote, manualPeople, logs]);
+  }, [manualHours, manualMinutes, manualNote, manualPeople, addLog]);
 
-  const handleDelete = useCallback((id: string) => {
-    setLogs((prev) => {
-      const updated = prev.filter((l) => l.id !== id);
-      saveLogs(updated);
-      return updated;
-    });
-  }, []);
+  const handleDelete = useCallback(async (id: string) => {
+    await removeLog(id);
+  }, [removeLog]);
 
   return (
     <div className="flex flex-col gap-5">

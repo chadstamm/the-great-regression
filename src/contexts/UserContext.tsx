@@ -29,28 +29,43 @@ export function UserProvider({ children }: { children: ReactNode }) {
       try {
         const savedId = localStorage.getItem(STORAGE_KEY);
 
-        if (savedId && supabase) {
-          const { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', savedId)
-            .single();
-
-          if (data && !error) {
-            setUser(data as UserProfile);
-            setLoading(false);
-            setMounted(true);
-            return;
-          }
-          // Invalid ID — clear it
-          localStorage.removeItem(STORAGE_KEY);
-        }
-
-        if (savedId && !supabase) {
-          // Offline mode: reconstruct from localStorage
+        if (savedId) {
+          // Try localStorage backup first (always available)
           const savedName = localStorage.getItem('tgr-user-name');
           const savedIcon = localStorage.getItem('tgr-user-icon');
-          if (savedName) {
+
+          if (supabase) {
+            const { data, error } = await supabase
+              .from('users')
+              .select('*')
+              .eq('id', savedId)
+              .single();
+
+            if (data && !error) {
+              setUser(data as UserProfile);
+              setLoading(false);
+              setMounted(true);
+              return;
+            }
+
+            // Supabase failed but we have localStorage backup — use it
+            // (don't clear the ID; could be a temporary network issue)
+            if (savedName) {
+              setUser({
+                id: savedId,
+                name: savedName,
+                icon: savedIcon || 'caravel',
+                created_at: new Date().toISOString(),
+              });
+              setLoading(false);
+              setMounted(true);
+              return;
+            }
+
+            // No localStorage backup either — clear invalid ID
+            localStorage.removeItem(STORAGE_KEY);
+          } else if (savedName) {
+            // No Supabase available — use localStorage
             setUser({
               id: savedId,
               name: savedName,
