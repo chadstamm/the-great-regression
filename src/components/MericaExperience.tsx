@@ -542,7 +542,7 @@ export default function MericaExperience() {
               initial={{ x: 30, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.1, type: 'spring', stiffness: 150 }}
-              className="text-2xl uppercase leading-none sm:text-4xl"
+              className="text-3xl uppercase leading-none sm:text-5xl"
               style={{
                 fontFamily: 'var(--font-comic), var(--font-body)',
                 color: '#FBBF24',
@@ -556,7 +556,7 @@ export default function MericaExperience() {
               initial={{ x: 30, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.15, type: 'spring', stiffness: 150 }}
-              className="text-3xl uppercase leading-none sm:text-5xl"
+              className="text-4xl uppercase leading-none sm:text-6xl"
               style={{
                 fontFamily: 'var(--font-comic), var(--font-body)',
                 color: '#FBBF24',
