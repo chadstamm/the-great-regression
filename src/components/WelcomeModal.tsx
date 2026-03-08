@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
 import { USER_ICONS } from '@/lib/constants';
 import { supabase } from '@/lib/supabase';
 
 export default function WelcomeModal() {
-  const { showWelcome, createUser } = useUser();
+  const { showWelcome, createUser, dismissWelcome } = useUser();
   const [name, setName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
@@ -58,6 +59,15 @@ export default function WelcomeModal() {
         className="fixed inset-0 z-50 flex items-center justify-center"
         style={{ background: 'rgba(27, 75, 138, 0.95)' }}
       >
+        {/* Close button — browse without signing up */}
+        <button
+          onClick={dismissWelcome}
+          className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+          style={{ background: 'rgba(255,255,255,0.1)' }}
+        >
+          <X size={20} color="#fff" />
+        </button>
+
         {/* Azulejo pattern overlay */}
         <div
           className="azulejo-header-pattern pointer-events-none absolute inset-0"
