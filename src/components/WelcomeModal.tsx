@@ -202,7 +202,7 @@ export default function WelcomeModal() {
                         <img
                           src={`/images/icons/${icon.file}`}
                           alt={icon.label}
-                          className="h-9 w-9 object-contain"
+                          className="h-9 w-9 rounded-full object-cover"
                           style={isTaken ? { filter: 'grayscale(1)' } : undefined}
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
