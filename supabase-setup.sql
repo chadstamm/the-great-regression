@@ -55,7 +55,25 @@ create policy "Allow all for anon" on quiosque_logs
   using (true)
   with check (true);
 
--- 4. ENABLE REAL-TIME
+-- 4. CHECKLIST PROGRESS TABLE (festas, miradouros, etc.)
+create table if not exists checklist_progress (
+  id uuid default gen_random_uuid() primary key,
+  checklist_type text not null,
+  item_id text not null,
+  checked_by text not null,
+  created_at timestamptz default now(),
+  unique(checklist_type, item_id, checked_by)
+);
+
+alter table checklist_progress enable row level security;
+
+create policy "Allow all for anon" on checklist_progress
+  for all
+  using (true)
+  with check (true);
+
+-- 5. ENABLE REAL-TIME
 alter publication supabase_realtime add table bucket_items;
 alter publication supabase_realtime add table users;
 alter publication supabase_realtime add table quiosque_logs;
+alter publication supabase_realtime add table checklist_progress;

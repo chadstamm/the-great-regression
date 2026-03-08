@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, ArrowUpDown } from 'lucide-react';
 import Image from 'next/image';
+import { useUser } from '@/contexts/UserContext';
+import { useChecklistSync } from '@/hooks/useChecklistSync';
 
 type SortMode = 'name' | 'neighborhood';
 
@@ -190,18 +192,6 @@ const MIRADOUROS: Miradouro[] = [
   },
 ];
 
-const STORAGE_KEY = 'miradouros-checked';
-
-function loadChecked(): Record<string, boolean> {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
-
 function sortMiradouros(list: Miradouro[], mode: SortMode): Miradouro[] {
   return [...list].sort((a, b) => {
     if (mode === 'name') return a.name.localeCompare(b.name);
@@ -210,22 +200,11 @@ function sortMiradouros(list: Miradouro[], mode: SortMode): Miradouro[] {
 }
 
 export default function Miradouros() {
-  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const { user } = useUser();
+  const { isChecked, getCheckedBy, toggleChecked, checkedCount } = useChecklistSync('miradouros', user?.name);
   const [sortMode, setSortMode] = useState<SortMode>('neighborhood');
 
-  useEffect(() => {
-    setChecked(loadChecked());
-  }, []);
-
-  const toggleChecked = useCallback((id: string) => {
-    setChecked((prev) => {
-      const updated = { ...prev, [id]: !prev[id] };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
-
-  const visitedCount = MIRADOUROS.filter((m) => checked[m.id]).length;
+  const visitedCount = checkedCount;
   const sorted = sortMiradouros(MIRADOUROS, sortMode);
 
   // Group by neighborhood when in neighborhood sort mode
@@ -318,7 +297,8 @@ export default function Miradouros() {
         </div>
         <div className="flex flex-col gap-2">
           {sorted.map((miradouro) => {
-            const isChecked = !!checked[miradouro.id];
+            const checked = isChecked(miradouro.id);
+            const checkedBy = getCheckedBy(miradouro.id);
             let showNeighborhoodHeader = false;
             if (sortMode === 'neighborhood' && miradouro.neighborhood !== currentNeighborhood) {
               currentNeighborhood = miradouro.neighborhood;
@@ -338,31 +318,31 @@ export default function Miradouros() {
                   onClick={() => toggleChecked(miradouro.id)}
                   className="flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-all"
                   style={{
-                    background: isChecked
+                    background: checked
                       ? 'rgba(27, 75, 138, 0.08)'
                       : 'rgba(196, 149, 58, 0.04)',
-                    border: isChecked
+                    border: checked
                       ? '1px solid rgba(27, 75, 138, 0.25)'
                       : '1px solid rgba(196, 149, 58, 0.1)',
-                    opacity: isChecked ? 0.7 : 1,
+                    opacity: checked ? 0.7 : 1,
                   }}
                 >
                   {/* Checkbox */}
                   <div
                     className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors"
                     style={{
-                      borderColor: isChecked ? '#1B4B8A' : 'rgba(27, 75, 138, 0.3)',
-                      background: isChecked ? '#1B4B8A' : 'transparent',
+                      borderColor: checked ? '#1B4B8A' : 'rgba(27, 75, 138, 0.3)',
+                      background: checked ? '#1B4B8A' : 'transparent',
                     }}
                   >
-                    {isChecked && <Check size={12} color="#fff" strokeWidth={3} />}
+                    {checked && <Check size={12} color="#fff" strokeWidth={3} />}
                   </div>
 
                   {/* Content */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <p
-                        className={`text-sm font-semibold ${isChecked ? 'line-through' : ''}`}
+                        className={`text-sm font-semibold ${checked ? 'line-through' : ''}`}
                         style={{ color: '#1B4B8A' }}
                       >
                         {miradouro.name}
@@ -376,6 +356,22 @@ export default function Miradouros() {
                     <p className="mt-1 text-xs leading-relaxed" style={{ color: '#6B5A3E' }}>
                       {miradouro.description}
                     </p>
+                    {checkedBy.length > 0 && (
+                      <div className="mt-1.5 flex flex-wrap gap-1">
+                        {checkedBy.map((name) => (
+                          <span
+                            key={name}
+                            className="rounded-full px-1.5 py-0.5 text-[9px] font-semibold"
+                            style={{
+                              background: 'rgba(27, 75, 138, 0.08)',
+                              color: '#1B4B8A',
+                            }}
+                          >
+                            {name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </button>
               </div>
