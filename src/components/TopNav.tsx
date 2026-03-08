@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { useMode } from '@/contexts/ModeContext';
-import { useUser } from '@/contexts/UserContext';
 
 export type PortugalTab = 'lista' | 'quiosque' | 'festas' | 'miradouros' | 'copa';
 
@@ -21,7 +20,6 @@ const PORTUGAL_TABS: { id: PortugalTab; label: string }[] = [
 
 export default function TopNav({ activeTab, onTabChange }: TopNavProps) {
   const { mode, setMode } = useMode();
-  const { user, logout } = useUser();
   const isPortugal = mode === 'portugal';
 
   const switchMode = () => setMode(isPortugal ? 'merica' : 'portugal');
@@ -83,18 +81,7 @@ export default function TopNav({ activeTab, onTabChange }: TopNavProps) {
             : '1px solid rgba(220, 38, 38, 0.2)',
         }}
       >
-        <div className="mx-auto flex max-w-lg items-center justify-between px-3 py-2">
-          {user ? (
-            <button
-              onClick={logout}
-              className="text-[10px] font-medium"
-              style={{ color: isPortugal ? 'rgba(45, 42, 38, 0.35)' : 'rgba(255,255,255,0.3)' }}
-            >
-              {user.name} (logout)
-            </button>
-          ) : (
-            <div />
-          )}
+        <div className="mx-auto flex max-w-lg items-center justify-center px-3 py-2">
           <button
             onClick={switchMode}
             className="flex items-center gap-2.5 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all"
