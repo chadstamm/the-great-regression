@@ -81,12 +81,12 @@ export const SEED_ITEMS: Array<{
 export const USER_ICONS = [
   { id: 'caravel', label: 'Caravel', file: 'caravel.jpg' },
   { id: 'armillary', label: 'Armillary Sphere', file: 'armillary.jpg' },
-  { id: 'tram', label: 'Tram 28', file: 'tram.jpg' },
-  { id: 'sardine', label: 'Sardine', file: 'sardine.jpg' },
+  { id: 'tram', label: 'Electrico 28', file: 'tram.jpg' },
+  { id: 'sardine', label: 'Sardinha', file: 'sardine.jpg' },
   { id: 'rooster', label: 'Galo de Barcelos', file: 'rooster.jpg' },
   { id: 'guitar', label: 'Portuguese Guitar', file: 'guitar.jpg' },
   { id: 'heart', label: 'Coracao de Viana', file: 'heart.jpg' },
-  { id: 'cross', label: 'Cross of Christ', file: 'cross.jpg' },
+  { id: 'cross', label: 'Cruz de Cristo', file: 'cross.jpg' },
 ] as const;
 
 export type UserIconId = typeof USER_ICONS[number]['id'];
