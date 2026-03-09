@@ -100,7 +100,7 @@ export default function QuiosqueCounter() {
   const [manualPeople, setManualPeople] = useState<string[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Fetch all signed-up users from Supabase
+  // Fetch all signed-up users from Supabase + subscribe to changes
   useEffect(() => {
     async function fetchUsers() {
       if (!supabase) return;
@@ -113,6 +113,22 @@ export default function QuiosqueCounter() {
       }
     }
     fetchUsers();
+
+    if (!supabase) return;
+    const channel = supabase
+      .channel('users_realtime_quiosque')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'users' },
+        () => {
+          fetchUsers();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // Check for active stopwatch on mount

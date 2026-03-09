@@ -14,7 +14,7 @@ export default function WelcomeModal() {
   const [submitting, setSubmitting] = useState(false);
   const [takenIcons, setTakenIcons] = useState<Map<string, string>>(new Map());
 
-  // Fetch icons already claimed by existing users
+  // Fetch icons already claimed by existing users + subscribe to changes
   useEffect(() => {
     if (!showWelcome) return;
 
@@ -31,6 +31,22 @@ export default function WelcomeModal() {
     }
 
     fetchTakenIcons();
+
+    if (!supabase) return;
+    const channel = supabase
+      .channel('users_realtime_welcome')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'users' },
+        () => {
+          fetchTakenIcons();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [showWelcome]);
 
   // Default to first available icon when takenIcons loads

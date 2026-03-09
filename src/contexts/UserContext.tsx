@@ -48,13 +48,28 @@ export function UserProvider({ children }: { children: ReactNode }) {
               return;
             }
 
-            // Supabase failed but we have localStorage backup — use it
-            // (don't clear the ID; could be a temporary network issue)
+            // User exists locally but not in Supabase — try to sync them up
             if (savedName) {
+              const icon = savedIcon || 'caravel';
+              const { data: synced, error: syncError } = await supabase
+                .from('users')
+                .upsert({ id: savedId, name: savedName, icon })
+                .select()
+                .single();
+
+              if (synced && !syncError) {
+                // Successfully synced to Supabase
+                setUser(synced as UserProfile);
+                setLoading(false);
+                setMounted(true);
+                return;
+              }
+
+              // Sync failed (network issue) — use localStorage for now
               setUser({
                 id: savedId,
                 name: savedName,
-                icon: savedIcon || 'caravel',
+                icon,
                 created_at: new Date().toISOString(),
               });
               setLoading(false);
