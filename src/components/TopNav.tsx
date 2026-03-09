@@ -1,9 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { LogOut } from 'lucide-react';
 import { useMode } from '@/contexts/ModeContext';
-import { useUser } from '@/contexts/UserContext';
 
 export type PortugalTab = 'lista' | 'quiosque' | 'festas' | 'miradouros' | 'copa';
 
@@ -22,7 +20,6 @@ const PORTUGAL_TABS: { id: PortugalTab; label: string }[] = [
 
 export default function TopNav({ activeTab, onTabChange }: TopNavProps) {
   const { mode, setMode } = useMode();
-  const { user, logout } = useUser();
   const isPortugal = mode === 'portugal';
 
   const switchMode = () => setMode(isPortugal ? 'merica' : 'portugal');
@@ -84,8 +81,7 @@ export default function TopNav({ activeTab, onTabChange }: TopNavProps) {
             : '1px solid rgba(220, 38, 38, 0.2)',
         }}
       >
-        <div className="mx-auto flex max-w-lg items-center justify-between px-3 py-2">
-          <div className="w-8" />
+        <div className="mx-auto flex max-w-lg items-center justify-center px-3 py-2">
           <button
             onClick={switchMode}
             className="flex items-center gap-2.5 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all"
@@ -128,29 +124,6 @@ export default function TopNav({ activeTab, onTabChange }: TopNavProps) {
                 : 'Back to Portugal Mode'}
             </span>
           </button>
-          {user ? (
-            <button
-              onClick={logout}
-              className="flex h-8 w-8 items-center justify-center rounded-full transition-colors"
-              style={{
-                background: isPortugal
-                  ? 'rgba(27, 75, 138, 0.08)'
-                  : 'rgba(220, 38, 38, 0.12)',
-              }}
-              title={`Signed in as ${user.name} — tap to log out`}
-            >
-              <LogOut
-                size={14}
-                style={{
-                  color: isPortugal
-                    ? 'rgba(45, 42, 38, 0.45)'
-                    : 'rgba(251, 191, 36, 0.6)',
-                }}
-              />
-            </button>
-          ) : (
-            <div className="w-8" />
-          )}
         </div>
       </div>
     </nav>
